@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="adm_name">Demeter</string>
+  <string name="inject">Inject</string>
+  <string name="tracer">Tracer</string>
+  <string name="views">Views</string>
+  <string name="settings">Settings</string>
+  <string name="sort_dialog_title">Sort type</string>
+  <string name="thread_filter_dialog_title">Filter by thread</string>
+  <string name="threshold_filter_dialog_title">Filter by threshold</string>
+  <string name="sort_title">Sort by</string>
+  <string name="export_title">Export log</string>
+  <string name="thread_filter">thread</string>
+  <string name="no_collected_data">No collected data</string>
+  <string name="emulator_not_supported">Emulator not supported</string>
+  <string name="emulator_not_supported_description">Currently methods tracing works only on real devices.</string>
+  <string name="tracing_finished">Tracing finished</string>
+  <string name="ok">OK</string>
+  <string name="pick_methods">Pick methods (implemented only)</string>
+  <string name="no_filter">no_filter</string>
+  <string name="compose_filter_title">Filter</string>
+</resources>

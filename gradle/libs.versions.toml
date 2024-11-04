@@ -1,0 +1,133 @@
+[versions]
+androidGradlePlugin = '8.5.0'
+buildToolsCommonVersion = '31.5.0'
+
+kctfork-core = "0.5.1"
+flipper = "0.245.0"
+
+fastScroll = "1.4.0"
+
+fastAdapterCore = "5.6.0"
+
+junit = "4.13.2"
+
+kotlinSerialization = "1.6.3"
+kotlinCoroutines = "1.8.1"
+kotlin = "2.0.10"
+
+androidXMaterial = "1.10.0"
+androidXEspresso = "3.5.1"
+androidXJUnit = "1.1.5"
+androidXFragment = "1.6.1"
+androidXRecyclerView = "1.3.2"
+androidXViewPager2 = "1.0.0"
+androidXAnnotation = "1.7.0"
+androidXConstraintLayout = "2.1.4"
+androidXAppCompat = "1.6.1"
+androidXCoreKtx = "1.12.0"
+
+xTestRunner = "1.4.0"
+
+dagger = "2.48.1"
+javaxInject = "1"
+
+detekt = '1.23.0'
+
+asm = '9.6'
+commonsIo = '2.13.0'
+
+jupiter = '5.9.3'
+
+publish = '1.2.1'
+
+compose-compiler = "1.5.13"
+compose-runtime = "1.6.8"
+compose-activity = "1.9.0"
+
+[libraries]
+androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidXMaterial" }
+androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "androidXFragment" }
+androidx-recyclerView = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidXRecyclerView" }
+androidx-viewPager2 = { group = "androidx.viewpager2", name = "viewpager2", version.ref = "androidXViewPager2" }
+androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "androidXCoreKtx" }
+androidx-appCompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidXAppCompat" }
+androidx-constraintLayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidXConstraintLayout" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidXAnnotation" }
+androidx-collection = { group = "androidx.collection", name = "collection", version = "1.4.0" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidXJUnit" }
+androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidXJUnit" }
+androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidXEspresso" }
+
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlin-gradlePluginApi = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin-api", version.ref = "kotlin" }
+kotlin-compiler-testing = { module = "dev.zacsweers.kctfork:core", version.ref = "kctfork-core" }
+kotlin-compiler-embeddable = { module = "org.jetbrains.kotlin:kotlin-compiler-embeddable" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name = "kotlin-reflect", version.ref = "kotlin" }
+kotlin-test = { group = "org.jetbrains.kotlin", name = "kotlin-test", version.ref = "kotlin" }
+tools-gradle = { group = "com.android.tools.build", name = "gradle", version.ref = "androidGradlePlugin" }
+tools-gradleApi = { group = "com.android.tools.build", name = "gradle-api", version.ref = "androidGradlePlugin" }
+tools-common = { group = "com.android.tools", name = "common", version.ref = "buildToolsCommonVersion" }
+tools-sdkCommon = { group = "com.android.tools", name = "sdk-common", version.ref = "buildToolsCommonVersion" }
+commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIo" }
+asm-utils = { group = "org.ow2.asm", name = "asm-util", version.ref = "asm" }
+asm-commons = { group = "org.ow2.asm", name = "asm-commons", version.ref = "asm" }
+
+junit-core = { group = "junit", name = "junit", version.ref = "junit" }
+junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "jupiter" }
+test-core = { module = "androidx.test:core", version.ref = "xTestRunner" }
+test-rules = { module = "androidx.test:rules", version.ref = "xTestRunner" }
+test-runner = { module = "androidx.test:runner", version.ref = "xTestRunner" }
+
+androidx-benchmark = { module = "androidx.benchmark:benchmark-junit4", version = "1.3.3" }
+
+dagger = { group = "com.google.dagger", name = "dagger", version.ref = "dagger" }
+daggerCompiler = { group = "com.google.dagger", name = "dagger-compiler", version.ref = "dagger" }
+javaXInject = { group = "javax.inject", name = "javax.inject", version.ref = "javaxInject" }
+
+coroutines = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinCoroutines" }
+coroutinesAndroid = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinCoroutines" }
+coroutinesTest = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "kotlinCoroutines" }
+
+serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
+
+fastadapter-extensionExpandable = { group = "com.mikepenz", name = "fastadapter-extensions-expandable", version.ref = "fastAdapterCore" }
+fastadapter-core = { group = "com.mikepenz", name = "fastadapter", version.ref = "fastAdapterCore" }
+
+fastScroll = { group = "com.reddit", name = "indicator-fast-scroll", version.ref = "fastScroll" }
+flipper-core = { group = "com.facebook.flipper", name = "flipper", version.ref = "flipper" }
+
+detekt-cli = { group = "io.gitlab.arturbosch.detekt", name = "detekt-cli", version.ref = "detekt" }
+detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+detekt-plugin = { group = "io.gitlab.arturbosch.detekt", name = "detekt-gradle-plugin", version.ref = "detekt" }
+
+compose-compiler = { module = "androidx.compose.compiler:compiler-hosted", version.ref = "compose-compiler" }
+compose-compiler-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
+compose-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "compose-runtime" }
+compose-animation = { module = "androidx.compose.animation:animation-core", version.ref = "compose-runtime" }
+compose-material = { module = "androidx.compose.material:material", version.ref = "compose-runtime" }
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
+
+[plugins]
+module-gradle-plugin = { id = "plugins.module.gradle.plugin", version = "unspecified" }
+module-jvm-base = { id = "plugins.module.jvm.base", version = "unspecified" }
+module-android-base = { id = "plugins.module.android.base", version = "unspecified" }
+module-android-compose = { id = "plugins.module.android.compose", version = "unspecified" }
+module-android-showcase = { id = "plugins.module.android.showcase", version = "unspecified" }
+
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+
+android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+
+publish = { id = "com.gradle.plugin-publish", version.ref = "publish" }
+
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
+[bundles]
+compose = [
+    "compose-runtime",
+    "compose-animation",
+    "compose-material",
+    "compose-activity"
+]

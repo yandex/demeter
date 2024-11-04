@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Demeter.Base" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="DemeterEntryDescriptionStyle">
+        <item name="android:textColor">#666666</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="DemeterEntryDescriptionStyle.NoMargin">
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
+    <style name="DemeterEntryValueStyle">
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">15sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_marginBottom">4dp</item>
+    </style>
+
+    <style name="DemeterEntryValueStyle.NoMargin">
+        <item name="android:layout_marginBottom">0dp</item>
+    </style>
+
+</resources>

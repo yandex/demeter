@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:padding="6dp"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource"
+    >
+
+  <TextView
+      android:id="@+id/tvClassName"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="@color/d2m_font_default_title"
+      android:textSize="14sp"
+      />
+
+  <TextView
+      android:id="@+id/tvInitTime"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textColor="@color/d2m_font_default_description"
+      android:textSize="12sp"
+      />
+
+</LinearLayout>

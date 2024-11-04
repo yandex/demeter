@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btnMenu"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:background="@color/d2m_bg_warning_1"
+        android:padding="0dp"
+        android:text="@string/adm_name"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/sort"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/sort"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:background="@color/d2m_bg_warning_1"
+        android:text="@string/sort_title"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/btnMenu"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/lvMetrics"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scrollbars="vertical"
+        app:layout_constraintBottom_toTopOf="@id/export"
+        app:layout_constraintEnd_toStartOf="@id/fastscroller"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnMenu" />
+
+    <com.reddit.indicatorfastscroll.FastScrollerView
+        android:id="@+id/fastscroller"
+        android:layout_width="32dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/export"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnMenu" />
+
+    <com.reddit.indicatorfastscroll.FastScrollerThumbView
+        android:id="@+id/fastscroller_thumb"
+        android:layout_width="40dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="16dp"
+        android:elevation="2dp"
+        app:fastScrollerThumbColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="@+id/fastscroller"
+        app:layout_constraintEnd_toStartOf="@+id/fastscroller"
+        app:layout_constraintTop_toTopOf="@+id/fastscroller" />
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/export"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnMenu" />
+
+    <Button
+        android:id="@+id/export"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/d2m_main_button_color"
+        android:padding="0dp"
+        android:text="@string/export_title"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lvMetrics" />
+</merge>

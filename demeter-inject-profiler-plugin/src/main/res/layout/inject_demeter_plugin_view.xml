@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#f5f5f5"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/timeFilter"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:background="@color/d2m_bg_warning_1"
+        android:text="@string/adm_name"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/thread_filter"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/thread_filter"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:background="@color/d2m_bg_warning_1"
+        android:text="@string/thread_filter"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/sort"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/timeFilter" />
+
+    <Button
+        android:id="@+id/sort"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:background="@color/d2m_bg_warning_1"
+        android:text="@string/sort_title"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/thread_filter" />
+
+    <ExpandableListView
+        android:id="@+id/lvMetrics"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:childDivider="#00000000"
+        android:divider="#999999"
+        android:dividerHeight="1px"
+        android:groupIndicator="@drawable/ic_arrow_drop_down_24dp"
+        app:layout_constraintBottom_toTopOf="@id/export"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timeFilter"
+        tools:listitem="@layout/adm_list_item_metrics_description" />
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toTopOf="@id/export"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timeFilter" />
+
+    <Button
+        android:id="@+id/export"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/d2m_main_button_color"
+        android:padding="0dp"
+        android:text="@string/export_title"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/lvMetrics" />
+
+</merge>

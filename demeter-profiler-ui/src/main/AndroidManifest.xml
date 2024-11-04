@@ -1,0 +1,52 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <application>
+        <profileable
+            android:enabled="true"
+            android:shell="true"
+            tools:ignore="UnusedAttribute" />
+
+        <provider
+            android:name="com.yandex.demeter.internal.DemeterFileProvider"
+            android:authorities="com.yandex.demeter.fileprovider.${applicationId}"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/demeter_file_paths" />
+        </provider>
+
+        <activity
+            android:name="com.yandex.demeter.internal.ui.MetricsActivity"
+            android:exported="true"
+            android:icon="@mipmap/demeter_ic_launcher"
+            android:label="@string/adm_name"
+            android:roundIcon="@mipmap/demeter_ic_launcher"
+            android:taskAffinity="com.yandex.demeter.${applicationId}"
+            android:theme="@style/Demeter.Base" />
+
+        <activity-alias
+            android:name="com.yandex.demeter.internal.ui.DemeterLauncherActivity"
+            android:enabled="@bool/demeter_enable_launcher_icon"
+            android:exported="true"
+            android:icon="@mipmap/demeter_ic_launcher"
+            android:label="@string/adm_name"
+            android:roundIcon="@mipmap/demeter_ic_launcher"
+            android:targetActivity="com.yandex.demeter.internal.ui.MetricsActivity"
+            android:taskAffinity="com.yandex.demeter.${applicationId}"
+            android:theme="@style/Demeter.Base">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <!-- Android TV launcher intent --> <!-- Need image for banner for Android TV -->
+                <!-- <category android:name="android.intent.category.LEANBACK_LAUNCHER"/> -->
+            </intent-filter>
+
+        </activity-alias>
+
+    </application>
+</manifest>
