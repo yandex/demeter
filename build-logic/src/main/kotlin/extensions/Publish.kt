@@ -9,8 +9,12 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.maven
+import org.gradle.plugins.signing.SigningExtension
+
+private const val PUBLICATION_NAME = "Demeter"
 
 fun Project.publishLib(
     artifactId: String,
@@ -58,6 +62,7 @@ private fun Project.configurePublishingLib(
         }
     }
     configurePublishRepositories()
+    configurePublishSigning()
 }
 
 internal fun Project.configurePublishRepositories() {
@@ -74,4 +79,21 @@ internal fun Project.configurePublishRepositories() {
     }
 }
 
+internal fun Project.configurePublishSigning() {
+    val keyId = System.getenv("PUBLISH_SIGNING_KEY_ID") ?: return
+    val password = System.getenv("PUBLISH_SIGNING_PASSWORD") ?: return
+    val ringFile = System.getenv("PUBLISH_SIGNING_KEY_RING_FILE") ?: return
+
+    publishing {
+        signing {
+            project.extra["signing.keyId"] = keyId
+            project.extra["signing.password"] = password
+            project.extra["signing.secretKeyRingFile"] = ringFile
+            sign(publications[PUBLICATION_NAME])
+        }
+    }
+}
+
 internal fun Project.publishing(configure: org.gradle.api.Action<PublishingExtension>): Unit = extensions.configure("publishing", configure)
+
+internal fun Project.signing(configure: org.gradle.api.Action<SigningExtension>): Unit = extensions.configure("signing", configure)
