@@ -1,6 +1,6 @@
 # Demeter
 
-![](screenshots/demeter.png =300x)
+<img src="./screenshots/demeter.png" width="300">
 
 ## Description
 
@@ -16,19 +16,19 @@ Demeter is a performance measurement library that could simplify performance iss
 
 ## Screenshots
 
-![](screenshots/inject.png =300x)
+<img src="./screenshots/inject.png" width="300">
 
 Injected constuctor
 
-![](screenshots/tracer.png =300x)
+<img src="./screenshots/tracer.png" width="300">
 
 Tracer for methods
 
-![](screenshots/export.png =600x)
+<img src="./screenshots/export.png" width="600">
 
 Method export
 
-![](screenshots/compose1.png =600x) ![](screenshots/compose2.png =600x)
+<img src="./screenshots/compose1.png" width="300"> <img src="./screenshots/compose2.png" width="300">
 
 Inspect Compose recompositions and ObjectStates
 
