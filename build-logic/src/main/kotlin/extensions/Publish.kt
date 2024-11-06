@@ -13,6 +13,7 @@ import org.gradle.kotlin.dsl.extra
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.maven
 import org.gradle.plugins.signing.SigningExtension
+import org.gradle.plugins.signing.SigningPlugin
 
 private const val PUBLICATION_NAME = "Demeter"
 
@@ -83,6 +84,8 @@ internal fun Project.configurePublishSigning() {
     val keyId = System.getenv("PUBLISH_SIGNING_KEY_ID") ?: return
     val password = System.getenv("PUBLISH_SIGNING_PASSWORD") ?: return
     val ringFile = System.getenv("PUBLISH_SIGNING_KEY_RING_FILE") ?: return
+
+    plugins.apply(SigningPlugin::class.java)
 
     publishing {
         signing {
