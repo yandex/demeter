@@ -15,8 +15,6 @@ import org.gradle.kotlin.dsl.maven
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 
-private const val PUBLICATION_NAME = "Demeter"
-
 fun Project.publishLib(
     artifactId: String,
     isPluginProject: Boolean = false,
@@ -92,7 +90,7 @@ internal fun Project.configurePublishSigning() {
             project.extra["signing.keyId"] = keyId
             project.extra["signing.password"] = password
             project.extra["signing.secretKeyRingFile"] = ringFile
-            sign(publications[PUBLICATION_NAME])
+            sign(publications["maven"])
         }
     }
 }
