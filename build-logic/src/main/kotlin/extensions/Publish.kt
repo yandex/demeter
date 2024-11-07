@@ -14,6 +14,7 @@ import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.maven
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
+import java.io.File
 
 fun Project.publishLib(
     artifactId: String,
@@ -81,7 +82,7 @@ internal fun Project.configurePublishRepositories() {
 internal fun Project.configurePublishSigning() {
     val keyId = System.getenv("PUBLISH_SIGNING_KEY_ID") ?: return
     val password = System.getenv("PUBLISH_SIGNING_PASSWORD") ?: return
-    val ringFile = System.getenv("PUBLISH_SIGNING_KEY_RING_FILE") ?: return
+    val ringFile = System.getenv("PUBLISH_SIGNING_KEY_RING_FILE")?.let { File(it) } ?: return
 
     plugins.apply(SigningPlugin::class.java)
 
@@ -90,7 +91,7 @@ internal fun Project.configurePublishSigning() {
             project.extra["signing.keyId"] = keyId
             project.extra["signing.password"] = password
             project.extra["signing.secretKeyRingFile"] = ringFile
-            sign(publications["maven"])
+            sign(publications)
         }
     }
 }
