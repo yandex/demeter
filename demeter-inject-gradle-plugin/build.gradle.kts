@@ -8,7 +8,7 @@ plugins {
 plugin(
     name = "demeter-inject",
     pluginId = "com.yandex.demeter.inject",
-    implementation = "com.yandex.demeter.plugin.DemeterTransformsPlugin",
+    implementation = "com.yandex.demeter.inject.plugin.DemeterInjectPlugin",
 )
 
 dependencies {

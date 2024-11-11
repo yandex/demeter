@@ -29,7 +29,3 @@ allprojects {
         detektPlugins(rootProject.libs.detekt.formatting)
     }
 }
-
-task("publish") {
-    dependsOn(gradle.includedBuild("demeter-gradle-plugin").task(":publish"))
-}

@@ -1,4 +1,5 @@
 import extensions.plugin
+import extensions.publishLib
 
 plugins {
     alias(libs.plugins.module.jvm.base).apply(false)
@@ -18,11 +19,4 @@ dependencies {
     api(projects.composeGradlePlugin)
 
     implementation(libs.tools.gradle)
-}
-
-val rootPublishTask = tasks.getByName("publish")
-subprojects.forEach { subproject ->
-    subproject.afterEvaluate {
-        subproject.tasks.findByName("publish")?.let { rootPublishTask.dependsOn(it) }
-    }
 }

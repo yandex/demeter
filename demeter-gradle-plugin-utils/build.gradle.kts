@@ -5,7 +5,7 @@ plugins {
     `kotlin-dsl`
 }
 
-publishLib("gradle-plugin-utils", isPluginProject = true)
+publishLib("gradle-plugin-utils")
 
 dependencies {
     implementation(libs.tools.gradleApi)

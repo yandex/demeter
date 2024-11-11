@@ -17,6 +17,7 @@ fun Project.plugin(
             }
         }
     }
+    publishPlugin()
 }
 
 private fun Project.gradlePlugin(configure: Action<GradlePluginDevelopmentExtension>): Unit =
