@@ -23,7 +23,7 @@ class DemeterComposePlugin : KotlinCompilerPluginSupportPlugin {
     override fun getPluginArtifact(): SubpluginArtifact = SubpluginArtifact(
         groupId = "com.yandex.demeter",
         artifactId = "compose-compiler-plugin",
-        version = "0.37.0",
+        version = "0.38.0",
     )
 
     override fun applyToCompilation(
