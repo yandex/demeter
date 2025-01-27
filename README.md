@@ -79,8 +79,11 @@ override fun onCreate() {
     Demeter.init(
         DemeterInitializer(
             context = this,
-            flipperEnabled = false, // true - turn on flipper notifications
-            profilerEnabled = false, // true - turn on trace section for profiler
+            plugins = listOf(
+                TracerDemeterPlugin(),  // turn on Tracer plugin
+                InjectDemeterPlugin(),  // turn on Inject plugin
+                ComposeDemeterPlugin(), // turn on Compose plugin
+            ),
         )
     )
     ...
