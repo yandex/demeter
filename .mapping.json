@@ -1,4 +1,5 @@
 {
+  ".":"taxi/mobile/demeter",
   "LICENSE":"taxi/mobile/demeter/LICENSE",
   "README.md":"taxi/mobile/demeter/README.md",
   "build-logic/build.gradle.kts":"taxi/mobile/demeter/build-logic/build.gradle.kts",
