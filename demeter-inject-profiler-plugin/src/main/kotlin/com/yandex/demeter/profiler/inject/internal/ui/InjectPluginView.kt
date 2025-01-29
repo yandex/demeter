@@ -143,9 +143,7 @@ internal class InjectPluginView @JvmOverloads constructor(
                 job?.cancel()
                 job = scope.launch {
                     val descriptions = withContext(Dispatchers.Default) {
-                        currentInterceptor.asExpandableMetricItem().apply {
-                            Collections.sort(this, SortType.entries[which].comparator)
-                        }
+                        currentInterceptor.asExpandableMetricItem().sortedWith(SortType.entries[which].comparator)
                     }
                     adapter.updateMetrics(descriptions)
                 }

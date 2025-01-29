@@ -14,10 +14,22 @@
         android:padding="0dp"
         android:text="@string/adm_name"
         android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@id/sort"
+        app:layout_constraintEnd_toStartOf="@id/thread_filter"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/thread_filter"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:background="@color/d2m_bg_warning_1"
+        android:text="@string/thread_filter"
+        android:textSize="12sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/sort"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/btnMenu" />
 
     <Button
         android:id="@+id/sort"
@@ -28,7 +40,7 @@
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/btnMenu"
+        app:layout_constraintStart_toEndOf="@id/thread_filter"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView

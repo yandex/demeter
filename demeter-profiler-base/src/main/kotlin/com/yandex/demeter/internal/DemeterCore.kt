@@ -3,6 +3,8 @@ package com.yandex.demeter.internal
 import com.yandex.demeter.Demeter
 import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.internal.WarningLevel.Zero
+import com.yandex.demeter.internal.interceptor.ANY_THREAD_NAME
+import com.yandex.demeter.internal.interceptor.MAIN_THREAD_NAME
 import com.yandex.demeter.internal.interceptor.ThreadInterceptor
 import com.yandex.demeter.internal.interceptor.ThresholdInterceptor
 
@@ -18,7 +20,7 @@ class DemeterCore : Demeter.Core {
     )
 
     val threadsFilters: List<ThreadInterceptor> = listOf(
-        ThreadInterceptor("main thread"),
-        ThreadInterceptor("all threads")
+        ThreadInterceptor(MAIN_THREAD_NAME),
+        ThreadInterceptor(ANY_THREAD_NAME)
     )
 }

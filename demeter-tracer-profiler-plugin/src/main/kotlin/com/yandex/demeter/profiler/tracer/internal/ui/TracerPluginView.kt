@@ -59,8 +59,14 @@ internal class TracerPluginView @JvmOverloads constructor(
 
     private val lvMetrics = binding.lvMetrics
     private val tvEmpty = binding.tvEmpty
-    private val interceptorList = (Demeter.instance as DemeterCore).interceptors
-    private val mainInterceptor = (Demeter.instance as DemeterCore).mainInterceptor
+
+    private val mainFilter = (Demeter.instance as DemeterCore).mainInterceptor
+
+    private val interceptorEventsList = (Demeter.instance as DemeterCore).interceptors
+    private var appliedEventsFilter: Int? = null
+
+    private val threadsFilters = (Demeter.instance as DemeterCore).threadsFilters
+    private var appliedThreadFilter: Int? = null
 
     private var comparator: Comparator<TraceMetricViewItem> = TimeComparatorDescending()
 
@@ -74,8 +80,22 @@ internal class TracerPluginView @JvmOverloads constructor(
         layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
 
         binding.btnMenu.apply {
-            text = mainInterceptor.name
-            setOnClickListener { showMsInterceptorMenu() }
+            text = mainFilter.name
+            setOnClickListener {
+                showFilterDialog(interceptorEventsList) { which ->
+                    appliedEventsFilter = which
+                    applyFilter()
+                }
+            }
+        }
+        binding.threadFilter.apply {
+            text = appliedThreadFilter?.let { threadsFilters[it].name } ?: "all threads"
+            setOnClickListener {
+                showFilterDialog(threadsFilters) { which ->
+                    appliedThreadFilter = which
+                    applyFilter()
+                }
+            }
         }
         binding.sort.setOnClickListener {
             showSortDialog()
@@ -125,16 +145,31 @@ internal class TracerPluginView @JvmOverloads constructor(
         binding.fastscrollerThumb.setupWithFastScroller(binding.fastscroller)
     }
 
-    private fun showMsInterceptorMenu() {
-        val transformerNames = arrayOfNulls<String>(interceptorList.size)
-        for (i in interceptorList.indices) {
-            transformerNames[i] = interceptorList[i].name
+    private fun applyFilter() {
+        var items = TraceMetricsRepository.metrics.values.toList()
+
+        appliedEventsFilter?.let { which ->
+            items = interceptorEventsList[which].intercept(items)
+            binding.btnMenu.text = interceptorEventsList[which].name
+        }
+
+        appliedThreadFilter?.let { which ->
+            items = threadsFilters[which].intercept(items)
+            binding.threadFilter.text = threadsFilters[which].name
+        }
+
+        adapter.setNewList(items.asTraceMetrics())
+    }
+
+    private fun showFilterDialog(interceptor: List<UiInterceptor>, appliedFilter: (Int) -> Unit) {
+        val transformerNames = arrayOfNulls<String>(interceptor.size)
+        for (i in interceptor.indices) {
+            transformerNames[i] = interceptor[i].name
         }
         val builder = Builder(context).apply {
             setTitle(R.string.settings)
             setItems(transformerNames) { _, which: Int ->
-                binding.btnMenu.text = interceptorList[which].name
-                adapter.setNewList(interceptorList[which].asTraceMetrics())
+                appliedFilter(which)
             }
         }
         builder.create().show()
@@ -184,7 +219,7 @@ internal class TracerPluginView @JvmOverloads constructor(
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        adapter.setNewList(mainInterceptor.asTraceMetrics(), false)
+        adapter.setNewList(TraceMetricsRepository.metrics.values.asTraceMetrics(), false)
         invalidate()
     }
 
@@ -199,10 +234,8 @@ internal class TracerPluginView @JvmOverloads constructor(
         }
     }
 
-    private fun UiInterceptor.asTraceMetrics(): List<TraceMetricViewItem> {
-        return intercept(TraceMetricsRepository.metrics.values.toList())
-            .map { it.asViewItem() }
-            .toList()
+    private fun Collection<TraceMetric>.asTraceMetrics(): List<TraceMetricViewItem> {
+        return map { it.asViewItem() }.toList()
     }
 
     private fun TraceMetric.asViewItem(): TraceMetricViewItem {
