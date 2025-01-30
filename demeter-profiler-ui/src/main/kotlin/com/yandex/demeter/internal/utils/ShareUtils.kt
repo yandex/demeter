@@ -2,6 +2,7 @@ package com.yandex.demeter.internal.utils
 
 import android.content.Context
 import android.content.Intent
+import android.os.Environment
 import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.internal.WarningLevel
 import com.yandex.demeter.internal.getUriForFile
@@ -11,20 +12,21 @@ import java.io.File
 import java.io.Writer
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
-private val CURRENT_TIME_FORMATTER = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+private val CURRENT_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy_kk-mm-ss")
 
 private const val CSV_COLUMNS_DELIMITER = ','
 private const val INJECT_PATH_SEPARATOR = ';'
 
 @InternalDemeterApi
 fun shareCsv(context: Context, metrics: Collection<TimeMetric>, logName: String) {
-    val directory = context.getExternalFilesDir("external_path")
+    val directory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     val sharedFile = checkFileForPathTraversal(
-        File(directory, "$logName (${getCurrentDateTime()}).csv"),
+        File(directory, "${logName}-${getCurrentDateTime()}.csv"),
         directory
     )
+
+    directory.mkdirs()
 
     sharedFile.bufferedWriter().use {
         // header
