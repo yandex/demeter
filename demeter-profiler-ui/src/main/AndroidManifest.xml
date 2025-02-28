@@ -24,7 +24,7 @@
             android:exported="true"
             android:icon="@mipmap/demeter_ic_launcher"
             android:label="@string/adm_name"
-            android:roundIcon="@mipmap/demeter_ic_launcher"
+            android:roundIcon="@mipmap/demeter_ic_launcher_round"
             android:taskAffinity="com.yandex.demeter.${applicationId}"
             android:theme="@style/Demeter.Base" />
 
@@ -34,7 +34,7 @@
             android:exported="true"
             android:icon="@mipmap/demeter_ic_launcher"
             android:label="@string/adm_name"
-            android:roundIcon="@mipmap/demeter_ic_launcher"
+            android:roundIcon="@mipmap/demeter_ic_launcher_round"
             android:targetActivity="com.yandex.demeter.internal.ui.MetricsActivity"
             android:taskAffinity="com.yandex.demeter.${applicationId}"
             android:theme="@style/Demeter.Base">
