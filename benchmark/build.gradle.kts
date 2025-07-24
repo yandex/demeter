@@ -26,8 +26,8 @@ dependencies {
     androidTestImplementation(libs.androidx.junit.ktx)
     androidTestImplementation(libs.androidx.benchmark)
 
-    androidTestImplementation(projects.demeterCore) // benchmarkable
-    androidTestImplementation(projects.demeterProfilerBase) // benchmarkable
-    androidTestImplementation(projects.demeterTracerProfilerPlugin) // benchmarkable
-    androidTestImplementation(projects.demeterInjectProfilerPlugin) // benchmarkable
+    androidTestImplementation(projects.core) // benchmarkable
+    androidTestImplementation(projects.profilerBase) // benchmarkable
+    androidTestImplementation(projects.profilerTracerPlugin) // benchmarkable
+    androidTestImplementation(projects.profilerInjectPlugin) // benchmarkable
 }

@@ -1,10 +1,10 @@
-import extensions.publishLib
+import extensions.configurePom
+import extensions.configureRepository
 
 plugins {
     alias(libs.plugins.module.jvm.base)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
-
-publishLib("compose-compiler-plugin")
 
 dependencies {
     compileOnly(libs.kotlin.compiler.embeddable)
@@ -13,4 +13,12 @@ dependencies {
     testImplementation(libs.kotlin.compiler.embeddable)
     testImplementation(libs.kotlin.compiler.testing)
     testImplementation(libs.compose.runtime)
+}
+
+mavenPublishing {
+    publishToMavenCentral(false)
+    signAllPublications()
+
+    publishing { configureRepository() }
+    pom { configurePom("Demeter Compose Compiler Plugin") }
 }

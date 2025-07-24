@@ -1,8 +1,10 @@
+import extensions.configurePom
+import extensions.configureRepository
 import extensions.includeTests
-import extensions.publishLib
 
 plugins {
     alias(libs.plugins.module.android.base)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
 android {
@@ -16,11 +18,9 @@ android {
 
 includeTests()
 
-publishLib("profiler-tracer-plugin")
-
 dependencies {
-    implementation(projects.demeterProfilerBase)
-    implementation(projects.demeterProfilerUi)
+    implementation(projects.profilerBase)
+    implementation(projects.profilerUi)
 
     implementation(libs.kotlin.reflect)
     implementation(libs.coroutines)
@@ -30,4 +30,12 @@ dependencies {
     implementation(libs.fastadapter.core)
     implementation(libs.fastadapter.extensionExpandable)
     implementation(libs.fastScroll)
+}
+
+mavenPublishing {
+    publishToMavenCentral(false)
+    signAllPublications()
+
+    publishing { configureRepository() }
+    pom { configurePom("Demeter Tracer Profiler Plugin") }
 }

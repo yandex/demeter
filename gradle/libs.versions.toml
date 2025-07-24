@@ -44,6 +44,8 @@ compose-compiler = "1.5.13"
 compose-runtime = "1.6.8"
 compose-activity = "1.9.0"
 
+vanniktech-maven-publish = "0.34.0"
+
 [libraries]
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidXMaterial" }
 androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "androidXFragment" }
@@ -123,6 +125,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 publish = { id = "com.gradle.plugin-publish", version.ref = "publish" }
 
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
 
 [bundles]
 compose = [

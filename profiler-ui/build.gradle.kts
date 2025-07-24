@@ -1,7 +1,9 @@
-import extensions.publishLib
+import extensions.configurePom
+import extensions.configureRepository
 
 plugins {
     alias(libs.plugins.module.android.base)
+    alias(libs.plugins.vanniktech.maven.publish)
 }
 
 android {
@@ -10,11 +12,9 @@ android {
     viewBinding.enable = true
 }
 
-publishLib("profiler-ui")
-
 dependencies {
-    api(projects.demeterCore)
-    api(projects.demeterProfilerBase)
+    api(projects.core)
+    api(projects.profilerBase)
 
     implementation(libs.fastadapter.core)
     implementation(libs.fastadapter.extensionExpandable)
@@ -30,4 +30,12 @@ dependencies {
     implementation(libs.coroutines)
 
     implementation(libs.fastScroll)
+}
+
+mavenPublishing {
+    publishToMavenCentral(false)
+    signAllPublications()
+
+    publishing { configureRepository() }
+    pom { configurePom("Demeter Profiler UI") }
 }

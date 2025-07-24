@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.android).apply(false)
     alias(libs.plugins.compose.compiler).apply(false)
     alias(libs.plugins.detekt).apply(true)
+    alias(libs.plugins.vanniktech.maven.publish).apply(true)
 }
 
 allprojects {
@@ -28,4 +29,10 @@ allprojects {
         detektPlugins(rootProject.libs.detekt.cli)
         detektPlugins(rootProject.libs.detekt.formatting)
     }
+
+    plugins.apply(SigningPlugin::class.java)
+
+    project.extra["signing.keyId"] = System.getenv("PUBLISH_SIGNING_KEY_ID")
+    project.extra["signing.password"] = System.getenv("PUBLISH_SIGNING_PASSWORD")
+    project.extra["signing.secretKeyRingFile"] = System.getenv("PUBLISH_SIGNING_KEY_RING_FILE")
 }

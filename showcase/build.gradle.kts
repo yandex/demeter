@@ -7,7 +7,7 @@ plugins {
 configurations.all {
     resolutionStrategy.dependencySubstitution {
         substitute(module("com.yandex.demeter:compose-compiler-plugin"))
-            .using(project(":demeter-compose-compiler-plugin"))
+            .using(project(":compose-compiler-plugin"))
     }
 }
 
@@ -48,12 +48,12 @@ android {
 }
 
 dependencies {
-    implementation(projects.demeterProfiler)
-    implementation(projects.demeterCore)
+    implementation(projects.profiler)
+    implementation(projects.core)
 
-    implementation(projects.demeterTracerProfilerPlugin)
-    implementation(projects.demeterInjectProfilerPlugin)
-    implementation(projects.demeterComposeProfilerPlugin)
+    implementation(projects.profilerTracerPlugin)
+    implementation(projects.profilerInjectPlugin)
+    implementation(projects.profilerComposePlugin)
 
     kapt(libs.daggerCompiler)
     implementation(libs.dagger)

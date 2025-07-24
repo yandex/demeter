@@ -7,21 +7,21 @@ configureRepositories()
 pluginManagement {
     includeBuild("build-logic")
 
-    includeBuild("demeter-gradle-plugin")
+    includeBuild("gradle-plugin")
 }
 
 rootProject.name = "demeter"
 
 include(
     ":showcase",
-    ":demeter-core",
-    ":demeter-profiler",
-    ":demeter-profiler-base",
-    ":demeter-profiler-ui",
-    ":demeter-tracer-profiler-plugin",
-    ":demeter-inject-profiler-plugin",
-    ":demeter-compose-profiler-plugin",
-    ":demeter-compose-compiler-plugin",
-    ":demeter-flipper",
-    ":demeter-benchmark",
+    ":core",
+    ":profiler",
+    ":profiler-base",
+    ":profiler-ui",
+    ":profiler-tracer-plugin",
+    ":profiler-inject-plugin",
+    ":profiler-compose-plugin",
+    ":compose-compiler-plugin",
+    ":flipper",
+    ":benchmark",
 )
