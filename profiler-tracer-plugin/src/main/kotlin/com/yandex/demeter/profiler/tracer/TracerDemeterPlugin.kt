@@ -11,11 +11,15 @@ import kotlinx.coroutines.CoroutineScope
 
 class TracerDemeterPlugin(
     private val reporters: List<Reporter> = emptyList(),
+    private val isEnabledOnStart: Boolean = true
 ) : UiDemeterPlugin {
     override val id: String get() = "com.yandex.demeter.profiler.tracer"
     override val name: String get() = "Tracer"
 
     override fun init(consumerScope: CoroutineScope) {
+        if (isEnabledOnStart) {
+            com.yandex.demeter.profiler.tracer.internal.asm.EnabledValueHolder.isEnabled = true
+        }
         TraceMetricsReportersNotifier.init(reporters)
         AsmTraceMetricsHandler.init(consumerScope)
     }

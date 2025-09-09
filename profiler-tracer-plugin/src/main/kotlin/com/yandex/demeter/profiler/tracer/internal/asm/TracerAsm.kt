@@ -61,10 +61,13 @@ object TracerAsm : AbstractTracerAsm(
         startTimeNs: Long,
         fullMethodName: String,
     ) {
-        beginSectionInternal(
-            startTimeNs = startTimeNs,
-            fullMethodName = fullMethodName,
-        )
+        if (EnabledValueHolder.isEnabled) {
+            beginSectionInternal(
+                startTimeNs = startTimeNs,
+                fullMethodName = fullMethodName,
+            )
+        }
+
     }
 
     @JvmStatic
@@ -74,11 +77,18 @@ object TracerAsm : AbstractTracerAsm(
         className: String,
         methodName: String,
     ) {
-        endSectionInternal(
-            startTimeNs = startTimeNs,
-            fullMethodName = fullMethodName,
-            className = className,
-            methodName = methodName,
-        )
+        if (EnabledValueHolder.isEnabled) {
+            endSectionInternal(
+                startTimeNs = startTimeNs,
+                fullMethodName = fullMethodName,
+                className = className,
+                methodName = methodName,
+            )
+        }
+
     }
+}
+
+object EnabledValueHolder {
+    var isEnabled = false
 }
