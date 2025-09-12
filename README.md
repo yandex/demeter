@@ -1,24 +1,25 @@
 # Demeter
+![Maven Central Version](https://img.shields.io/maven-central/v/com.yandex.demeter/core)
 
 <img src="./screenshots/demeter.png" width="300">
 
 ## Description
 
-Demeter is a performance measurement library that could simplify performance issues investigation in your app. It's also useful to give a special prepared build with Demeter inside to your QA team to use it while regress process and upload performace report in the end.
+Demeter is a performance measurement library that could simplify performance issues investigation in your app. It's also useful to give a specially prepared build with Demeter inside to your QA team to use it during regression testing process and upload performance reports in the end.
 
 ## Features
 
-- Tracer: Measures project methods with information about an execution thread, a consuming time and helps to sort by hazard level
-- Inject: Wraps and calculates Injected constructors and its dependencies. It's useful to dig up problems with a dagger graph
-- Enriches methods with profileable sections that helps to investigate problems in an Android Profiler or Perfetto
-- Compose: observe StateObject changes and discover it
-- Exports measurements to the excel format and Flipper
+- Tracer: Measures project methods with information about execution thread, execution time and helps to sort by hazard level
+- Inject: Wraps and calculates Injected constructors and their dependencies. It's useful to identify problems with a dagger graph
+- Enriches methods with profileable sections that help to investigate problems in Android Profiler or Perfetto
+- Compose: observes StateObject changes and discovers them
+- Exports measurements to Excel format and Flipper
 
 ## Screenshots
 
 <img src="./screenshots/inject.png" width="300">
 
-Injected constuctor
+Injected constructor
 
 <img src="./screenshots/tracer.png" width="300">
 
@@ -48,6 +49,8 @@ Functionality is provided via specifying profiler plugins by consumer needs:
 - `demeter-inject-profiler-plugin` - analyzing @Inject constructor initialization
 - `demeter-compose-profiler-plugin` - Jetpack Compose analyzer
 
+**Note**: When using published Maven artifacts (not building from source), you need to explicitly add plugin dependencies in addition to the main profiler dependency.
+
 For dev build type:
 1. Add demeter plugin
 ```kotlin
@@ -60,6 +63,12 @@ plugins {
 dependencies {
     // if buildType == Dev/Debug/etc...
     implementation("com.yandex.demeter:profiler")
+    
+    // Add plugin dependencies for Maven artifacts (required when using published artifacts)
+    // Only add the plugins you actually need:
+    implementation("com.yandex.demeter:profiler-tracer-plugin:VERSION")  // for TracerDemeterPlugin()
+    implementation("com.yandex.demeter:profiler-inject-plugin:VERSION")  // for InjectDemeterPlugin()
+    implementation("com.yandex.demeter:profiler-compose-plugin:VERSION") // for ComposeDemeterPlugin()
 }
 ```
 3. Open your AndroidManifest and add:
