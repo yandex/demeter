@@ -28,24 +28,30 @@ open class DemeterTracerPlugin : Plugin<Project> {
                 )
             }
 
-            onVariants { variant ->
-                val extension = variant.getExtension(DemeterTracerExtension::class.java) ?: run {
-                    return@onVariants
-                }
+            try {
+                onVariants { variant ->
+                    val extension = variant.getExtension(DemeterTracerExtension::class.java)
+                        ?: return@onVariants
 
-                if (!extension.enabled.get()) {
-                    return@onVariants
-                }
+                    if (!extension.enabled.get()) {
+                        return@onVariants
+                    }
 
-                variant.instrumentation.transformClassesWith(
-                    TracerClassVisitorFactory::class.java,
-                    InstrumentationScope.ALL
-                ) {
-                    it.asmDebug.set(extension.debug)
-                    it.includedClasses.set(extension.includedClasses)
-                    it.excludedClasses.set(extension.excludedClasses)
+                    variant.instrumentation.transformClassesWith(
+                        TracerClassVisitorFactory::class.java,
+                        InstrumentationScope.ALL
+                    ) {
+                        it.asmDebug.set(extension.debug)
+                        it.includedClasses.set(extension.includedClasses)
+                        it.excludedClasses.set(extension.excludedClasses)
+                    }
+                    variant.instrumentation.setAsmFramesComputationMode(
+                        DEMETER_FRAMES_COMPUTATION_MODE
+                    )
                 }
-                variant.instrumentation.setAsmFramesComputationMode(DEMETER_FRAMES_COMPUTATION_MODE)
+            } catch (e: Exception) {
+                target.logger.error("Failed to configure Demeter Tracer plugin", e)
+                throw e
             }
         }
     }

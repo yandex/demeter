@@ -73,6 +73,7 @@
   "gradle-plugin-utils/build.gradle.kts":"taxi/mobile/demeter/gradle-plugin-utils/build.gradle.kts",
   "gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/Configuration.kt":"taxi/mobile/demeter/gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/Configuration.kt",
   "gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/DemeterBaseExtension.kt":"taxi/mobile/demeter/gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/DemeterBaseExtension.kt",
+  "gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/DependencyValidator.kt":"taxi/mobile/demeter/gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/DependencyValidator.kt",
   "gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/Utils.kt":"taxi/mobile/demeter/gradle-plugin-utils/src/main/kotlin/com/yandex/demeter/plugin/Utils.kt",
   "gradle-plugin/build.gradle.kts":"taxi/mobile/demeter/gradle-plugin/build.gradle.kts",
   "gradle-plugin/gradle.properties":"taxi/mobile/demeter/gradle-plugin/gradle.properties",

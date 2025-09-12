@@ -15,38 +15,44 @@ open class DemeterInjectPlugin : Plugin<Project> {
         target.requireAndroidApp()
         target.extensions.create(NAME, DemeterInjectProjectDslExtension::class.java)
 
-        target.androidComponents {
-            registerExtension(
-                DslExtension.Builder(NAME)
-                    .extendBuildTypeWith(DemeterInjectBuildTypeDslExtension::class.java)
-                    .build()
-            ) { config ->
-                target.objects.newInstance(
-                    DemeterInjectExtension::class.java,
-                    config,
-                    target
-                )
+        try {
+            target.androidComponents {
+                registerExtension(
+                    DslExtension.Builder(NAME)
+                        .extendBuildTypeWith(DemeterInjectBuildTypeDslExtension::class.java)
+                        .build()
+                ) { config ->
+                    target.objects.newInstance(
+                        DemeterInjectExtension::class.java,
+                        config,
+                        target
+                    )
+                }
+
+                onVariants { variant ->
+                    val extension = variant.getExtension(DemeterInjectExtension::class.java)
+                        ?: return@onVariants
+
+                    if (!extension.enabled.get()) {
+                        return@onVariants
+                    }
+
+                    variant.instrumentation.transformClassesWith(
+                        InjectClassVisitorFactory::class.java,
+                        InstrumentationScope.ALL
+                    ) {
+                        it.asmDebug.set(extension.debug)
+                        it.includedClasses.set(extension.includedClasses)
+                        it.excludedClasses.set(extension.excludedClasses)
+                    }
+                    variant.instrumentation.setAsmFramesComputationMode(
+                        DEMETER_FRAMES_COMPUTATION_MODE
+                    )
+                }
             }
-
-            onVariants { variant ->
-                val extension = variant.getExtension(DemeterInjectExtension::class.java) ?: run {
-                    return@onVariants
-                }
-
-                if (!extension.enabled.get()) {
-                    return@onVariants
-                }
-
-                variant.instrumentation.transformClassesWith(
-                    InjectClassVisitorFactory::class.java,
-                    InstrumentationScope.ALL
-                ) {
-                    it.asmDebug.set(extension.debug)
-                    it.includedClasses.set(extension.includedClasses)
-                    it.excludedClasses.set(extension.excludedClasses)
-                }
-                variant.instrumentation.setAsmFramesComputationMode(DEMETER_FRAMES_COMPUTATION_MODE)
-            }
+        } catch (e: Exception) {
+            target.logger.error("Failed to configure Demeter Inject plugin", e)
+            throw e
         }
     }
 }
