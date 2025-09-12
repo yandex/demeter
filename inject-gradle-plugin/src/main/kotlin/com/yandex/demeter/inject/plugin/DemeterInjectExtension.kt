@@ -1,25 +1,54 @@
 package com.yandex.demeter.inject.plugin
 
+import com.android.build.api.variant.VariantExtensionConfig
 import com.yandex.demeter.plugin.FeatureExtension
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
+import javax.inject.Inject
 
-open class DemeterInjectExtension : FeatureExtension() {
-    internal var debug: Boolean = false
+abstract class DemeterInjectExtension @Inject constructor(
+    extensionConfig: VariantExtensionConfig<*>,
+    project: Project
+) : FeatureExtension() {
+    abstract val includedClasses: ListProperty<String>
+    abstract val excludedClasses: ListProperty<String>
 
-    var includedClasses: List<String> = listOf()
-    var excludedClasses: List<String> = listOf()
+    init {
+        val projectExtension = project.extensions
+            .findByType(DemeterInjectProjectDslExtension::class.java)
+        var buildExtension = extensionConfig
+            .buildTypeExtension(DemeterInjectBuildTypeDslExtension::class.java)
 
-    override val extensionName = NAME
-
-    override fun apply(project: Project) {
-        project.configureExtension<DemeterInjectExtension> { extension ->
-            extension.debug = debug
-            extension.includedClasses = includedClasses
-            extension.excludedClasses = excludedClasses
-        }
+        enabled.set(
+            buildExtension.enabled ?: projectExtension?.enabled ?: false
+        )
+        debug.set(
+            buildExtension.debug ?: projectExtension?.debug ?: false
+        )
+        excludedClasses.set(
+            buildExtension.excludedClasses ?: projectExtension?.excludedClasses ?: emptyList()
+        )
+        includedClasses.set(
+            buildExtension.includedClasses ?: projectExtension?.includedClasses ?: emptyList()
+        )
     }
+
+    override val extensionName
+        get() = NAME
 
     companion object {
         const val NAME = "demeterInject"
     }
+}
+
+interface DemeterInjectProjectDslExtension : DemeterInjectDslExtension
+
+interface DemeterInjectBuildTypeDslExtension : DemeterInjectDslExtension
+
+interface DemeterInjectDslExtension {
+    var enabled: Boolean?
+    var debug: Boolean?
+
+    var includedClasses: List<String>?
+    var excludedClasses: List<String>?
 }

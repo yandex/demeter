@@ -1,16 +1,11 @@
 package com.yandex.demeter.plugin
 
-import org.gradle.api.Project
+import com.android.build.api.variant.VariantExtension
+import org.gradle.api.provider.Property
 
-abstract class FeatureExtension {
-
+abstract class FeatureExtension : VariantExtension, java.io.Serializable {
     abstract val extensionName: String
 
-    abstract fun apply(project: Project)
-
-    protected inline fun <reified T> Project.configureExtension(configure: (T) -> Unit = {}) {
-        val extension = extensions.findByType(T::class.java)
-            ?: extensions.create(extensionName, T::class.java)
-        extension.apply(configure)
-    }
+    abstract val enabled: Property<Boolean>
+    abstract val debug: Property<Boolean>
 }

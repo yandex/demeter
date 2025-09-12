@@ -1,25 +1,54 @@
 package com.yandex.demeter.tracer.plugin
 
+import com.android.build.api.variant.VariantExtensionConfig
 import com.yandex.demeter.plugin.FeatureExtension
 import org.gradle.api.Project
+import org.gradle.api.provider.ListProperty
+import javax.inject.Inject
 
-open class DemeterTracerExtension : FeatureExtension() {
-    internal var debug: Boolean = false
+abstract class DemeterTracerExtension @Inject constructor(
+    extensionConfig: VariantExtensionConfig<*>,
+    project: Project
+) : FeatureExtension() {
+    abstract val includedClasses: ListProperty<String>
+    abstract val excludedClasses: ListProperty<String>
 
-    var includedClasses: List<String> = listOf()
-    var excludedClasses: List<String> = listOf()
+    init {
+        val projectExtension = project.extensions
+            .findByType(DemeterTracerProjectDslExtension::class.java)
+        var buildExtension = extensionConfig
+            .buildTypeExtension(DemeterTracerBuildTypeDslExtension::class.java)
 
-    override val extensionName = NAME
-
-    override fun apply(project: Project) {
-        project.configureExtension<DemeterTracerExtension> { extension ->
-            extension.debug = debug
-            extension.includedClasses = includedClasses
-            extension.excludedClasses = excludedClasses
-        }
+        enabled.set(
+            buildExtension.enabled ?: projectExtension?.enabled ?: false
+        )
+        debug.set(
+            buildExtension.debug ?: projectExtension?.debug ?: false
+        )
+        excludedClasses.set(
+            buildExtension.excludedClasses ?: projectExtension?.excludedClasses ?: emptyList()
+        )
+        includedClasses.set(
+            buildExtension.includedClasses ?: projectExtension?.includedClasses ?: emptyList()
+        )
     }
+
+    override val extensionName
+        get() = NAME
 
     companion object {
         const val NAME = "demeterTracer"
     }
+}
+
+interface DemeterTracerProjectDslExtension : DemeterTracerDslExtension
+
+interface DemeterTracerBuildTypeDslExtension : DemeterTracerDslExtension
+
+interface DemeterTracerDslExtension {
+    var enabled: Boolean?
+    var debug: Boolean?
+
+    var includedClasses: List<String>?
+    var excludedClasses: List<String>?
 }

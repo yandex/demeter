@@ -113,6 +113,23 @@ demeter {
     compose() // turn on compose inspections
 }
 ```
+It's also possible to configure inside builtTypes block separately:
+```kotlin
+android {
+    ...
+
+    buildTypes {
+        getByName("debug") {
+            demeter {
+                tracer()
+                inject()
+                compose()
+            }
+        }
+    }
+}
+```
+
 6. Run and control!
 
 ## Gradle plugins

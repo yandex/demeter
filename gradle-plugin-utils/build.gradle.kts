@@ -8,7 +8,7 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.tools.gradleApi)
+    api(libs.tools.gradleApi)
     implementation(libs.asm.commons)
 }
 

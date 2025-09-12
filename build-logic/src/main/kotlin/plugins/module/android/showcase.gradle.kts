@@ -9,7 +9,6 @@ plugins {
     id("com.android.application")
     kotlin("android")
     kotlin("plugin.compose")
-    kotlin("kapt")
 }
 
 group = BuildConfig.demeterGroup

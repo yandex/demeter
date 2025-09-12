@@ -79,7 +79,7 @@ internal class IrTraceComposableFunction(
             Name.identifier("println")
         )
     ).single {
-        val parameters = it.owner.valueParameters
+        val parameters = it.owner.parameters
         parameters.size == 1 && parameters[0].type == typeNullableAny
     }
 
@@ -130,7 +130,7 @@ internal class IrTraceComposableFunction(
     ): IrCall {
         val concat = irConcat()
         concat.addArgument(irString("DEMETERCOMPOSE: ⇢ ${function.name}("))
-        for ((index, valueParameter) in function.valueParameters.withIndex()) {
+        for ((index, valueParameter) in function.parameters.withIndex()) {
             if (index > 0) concat.addArgument(irString(", "))
             concat.addArgument(irString("${valueParameter.name}="))
             concat.addArgument(irGet(valueParameter))
@@ -138,7 +138,7 @@ internal class IrTraceComposableFunction(
         concat.addArgument(irString(")"))
 
         return irCall(logFunction).also { call ->
-            call.putValueArgument(0, concat)
+            call.arguments[0] = concat
         }
     }
 
@@ -160,7 +160,7 @@ internal class IrTraceComposableFunction(
         }
 
         return irCall(logFunction).also { call ->
-            call.putValueArgument(0, concat)
+            call.arguments[0] = concat
         }
     }
 

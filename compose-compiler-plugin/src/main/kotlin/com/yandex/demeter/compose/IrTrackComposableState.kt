@@ -43,7 +43,7 @@ internal class IrTrackComposableState(
             Name.identifier("println")
         )
     ).single {
-        val parameters = it.owner.valueParameters
+        val parameters = it.owner.parameters
         parameters.size == 1 && parameters[0].type == pluginContext.irBuiltIns.anyNType
     }
 

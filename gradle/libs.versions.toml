@@ -1,6 +1,6 @@
 [versions]
-androidGradlePlugin = '8.5.0'
-buildToolsCommonVersion = '31.5.0'
+androidGradlePlugin = '8.13.0'
+buildToolsCommonVersion = '31.13.0'
 
 kctfork-core = "0.5.1"
 flipper = "0.245.0"
@@ -11,38 +11,37 @@ fastAdapterCore = "5.6.0"
 
 junit = "4.13.2"
 
-kotlinSerialization = "1.6.3"
-kotlinCoroutines = "1.8.1"
-kotlin = "2.0.10"
+kotlinSerialization = "1.9.0"
+kotlinCoroutines = "1.10.2"
+kotlin = "2.2.20"
+ksp = "2.2.20-2.0.2"
 
-androidXMaterial = "1.10.0"
+androidXMaterial = "1.13.0"
 androidXEspresso = "3.5.1"
 androidXJUnit = "1.1.5"
-androidXFragment = "1.6.1"
-androidXRecyclerView = "1.3.2"
-androidXViewPager2 = "1.0.0"
-androidXAnnotation = "1.7.0"
-androidXConstraintLayout = "2.1.4"
-androidXAppCompat = "1.6.1"
-androidXCoreKtx = "1.12.0"
+androidXFragment = "1.8.9"
+androidXRecyclerView = "1.4.0"
+androidXViewPager2 = "1.1.0"
+androidXAnnotation = "1.9.1"
+androidXConstraintLayout = "2.2.1"
+androidXAppCompat = "1.7.1"
+androidXCoreKtx = "1.17.0"
 
 xTestRunner = "1.4.0"
 
-dagger = "2.48.1"
+dagger = "2.57.1"
 javaxInject = "1"
 
 detekt = '1.23.0'
 
-asm = '9.6'
-commonsIo = '2.13.0'
+asm = '9.8'
+commonsIo = '2.20.0'
 
 jupiter = '5.9.3'
 
-publish = '1.2.1'
-
-compose-compiler = "1.5.13"
-compose-runtime = "1.6.8"
-compose-activity = "1.9.0"
+compose-compiler = "1.5.15"
+compose-runtime = "1.9.1"
+compose-activity = "1.11.0"
 
 vanniktech-maven-publish = "0.34.0"
 
@@ -110,11 +109,11 @@ compose-material = { module = "androidx.compose.material:material", version.ref 
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
 
 [plugins]
-module-gradle-plugin = { id = "plugins.module.gradle.plugin", version = "unspecified" }
-module-jvm-base = { id = "plugins.module.jvm.base", version = "unspecified" }
-module-android-base = { id = "plugins.module.android.base", version = "unspecified" }
-module-android-compose = { id = "plugins.module.android.compose", version = "unspecified" }
-module-android-showcase = { id = "plugins.module.android.showcase", version = "unspecified" }
+module-gradle-plugin = { id = "plugins.module.gradle.plugin" }
+module-jvm-base = { id = "plugins.module.jvm.base" }
+module-android-base = { id = "plugins.module.android.base" }
+module-android-compose = { id = "plugins.module.android.compose" }
+module-android-showcase = { id = "plugins.module.android.showcase" }
 
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 
@@ -122,9 +121,8 @@ android-application = { id = "com.android.application", version.ref = "androidGr
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
-publish = { id = "com.gradle.plugin-publish", version.ref = "publish" }
-
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 vanniktech-maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "vanniktech-maven-publish" }
 
 [bundles]

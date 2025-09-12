@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.module.android.showcase)
+    alias(libs.plugins.ksp)
 
     id("com.yandex.demeter")
 }
@@ -9,16 +10,6 @@ configurations.all {
         substitute(module("com.yandex.demeter:compose-compiler-plugin"))
             .using(project(":compose-compiler-plugin"))
     }
-}
-
-demeter {
-    tracer {
-        includedClasses = listOf("com.yandex.demeter.showcase")
-    }
-    inject {
-        includedClasses = listOf("com.yandex.demeter.showcase")
-    }
-    compose()
 }
 
 android {
@@ -37,6 +28,19 @@ android {
     }
 
     buildTypes {
+        getByName("debug") {
+            demeter {
+                tracer {
+                    includedClasses = listOf("com.yandex.demeter.showcase")
+                }
+                inject {
+                    includedClasses = listOf("com.yandex.demeter.showcase")
+                }
+
+                compose()
+            }
+        }
+
         getByName("release") {
             isMinifyEnabled = false
             proguardFiles(
@@ -55,7 +59,7 @@ dependencies {
     implementation(projects.profilerInjectPlugin)
     implementation(projects.profilerComposePlugin)
 
-    kapt(libs.daggerCompiler)
+    ksp(libs.daggerCompiler)
     implementation(libs.dagger)
     implementation(libs.javaXInject)
 

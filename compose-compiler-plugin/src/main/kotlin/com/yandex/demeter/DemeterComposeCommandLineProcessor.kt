@@ -12,7 +12,7 @@ import org.jetbrains.kotlin.config.CompilerConfigurationKey
 class DemeterComposeCommandLineProcessor : CommandLineProcessor {
     override val pluginId: String = "demeter-compose-compiler-plugin"
 
-    override val pluginOptions: Collection<AbstractCliOption> = listOf(
+    override val pluginOptions: Collection<CliOption> = listOf(
         CliOption(
             optionName = "enabled",
             valueDescription = "<true|false>",
@@ -28,6 +28,7 @@ class DemeterComposeCommandLineProcessor : CommandLineProcessor {
     ) {
         when (option.optionName) {
             "enabled" -> configuration.put(ENABLED, value.toBoolean())
+            else -> configuration.put(ENABLED, false)
         }
     }
 

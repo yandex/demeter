@@ -182,9 +182,9 @@ class ComposeStatementTransformer(
         logger.i("Registered recomposition for ${stateCall.symbol.owner.name} in ${function.name.asString()} (${currentFileName.orEmpty()})")
 
         return irCall(recomposeNotifyFunction).also { call ->
-            call.putValueArgument(0, irGet(composer))
-            call.putValueArgument(1, irString(function.name.asString()))
-            call.putValueArgument(2, irString(currentFileName.orEmpty()))
+            call.arguments[0] = irGet(composer)
+            call.arguments[1] = irString(function.name.asString())
+            call.arguments[2] = irString(currentFileName.orEmpty())
         }
     }
 
@@ -196,9 +196,9 @@ class ComposeStatementTransformer(
         logger.i("Registered skip for ${stateCall.symbol.owner.name} in ${function.name.asString()} (${currentFileName.orEmpty()})")
 
         return irCall(skipNotifyFunction).also { call ->
-            call.putValueArgument(0, irGet(composer))
-            call.putValueArgument(1, irString(function.name.asString()))
-            call.putValueArgument(2, irString(currentFileName.orEmpty()))
+            call.arguments[0] = irGet(composer)
+            call.arguments[1] = irString(function.name.asString())
+            call.arguments[2] = irString(currentFileName.orEmpty())
         }
     }
 
@@ -210,19 +210,19 @@ class ComposeStatementTransformer(
         logger.i("Registered tracker for ${stateVariable.name.asString()} in ${function.name.asString()} (${currentFileName.orEmpty()})")
 
         return irCall(registerTrackerFunction).also { call ->
-            call.putValueArgument(0, irGet(stateVariable))
-            call.putValueArgument(1, irGet(composer))
-            call.putValueArgument(2, irString(function.name.asString()))
-            call.putValueArgument(3, irString(stateVariable.name.asString()))
-            call.putValueArgument(4, irString(currentFileName.orEmpty()))
+            call.arguments[0] = irGet(stateVariable)
+            call.arguments[1] = irGet(composer)
+            call.arguments[2] = irString(function.name.asString())
+            call.arguments[3] = irString(stateVariable.name.asString())
+            call.arguments[4] = irString(currentFileName.orEmpty())
         }
     }
 
     private fun IrFunction.getComposer(): IrValueParameter? {
-        return function.valueParameters
+        return function.parameters
             .firstOrNull { it.name.asString() == "\$composer" }
             ?: run {
-                logger.e("Not found composer in variables: ${function.valueParameters.map { it.name.asString() }}")
+                logger.e("Not found composer in variables: ${function.parameters.map { it.name.asString() }}")
                 return null
             }
     }
