@@ -10,10 +10,11 @@ import com.yandex.demeter.internal.model.TimeMetric
 import java.io.BufferedWriter
 import java.io.File
 import java.io.Writer
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-private val CURRENT_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy_kk-mm-ss")
+private val CURRENT_TIME_FORMATTER = SimpleDateFormat("dd-MM-yyyy_kk-mm-ss", Locale.US)
 
 private const val CSV_COLUMNS_DELIMITER = ','
 private const val INJECT_PATH_SEPARATOR = ';'
@@ -75,8 +76,7 @@ private fun BufferedWriter.appendInjectArgs(
 }
 
 private fun getCurrentDateTime(): String {
-    val currentDateTime = LocalDateTime.now()
-    return CURRENT_TIME_FORMATTER.format(currentDateTime)
+    return CURRENT_TIME_FORMATTER.format(Date())
 }
 
 @Throws(IllegalArgumentException::class)

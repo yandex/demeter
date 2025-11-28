@@ -19,6 +19,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.coroutines)
 
+    implementation(libs.androidx.core)
     implementation(libs.androidx.constraintLayout)
 }
 

@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.core.app.NotificationCompat.Builder
 import com.yandex.demeter.api.UiDemeterPlugin
 import com.yandex.demeter.internal.core.UiConfig
@@ -28,13 +29,15 @@ object DemeterUiInitializer {
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val notificationChannel = context.getString(R.string.adm_name)
 
-        val importance = NotificationManager.IMPORTANCE_DEFAULT
-        var channel = notificationManager.getNotificationChannel(notificationChannel)
-        if (channel == null) {
-            channel = NotificationChannel(notificationChannel, notificationChannel, importance)
-            channel.description = notificationChannel
-            channel.enableVibration(false)
-            notificationManager.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            var channel = notificationManager.getNotificationChannel(notificationChannel)
+            if (channel == null) {
+                channel = NotificationChannel(notificationChannel, notificationChannel, importance)
+                channel.description = notificationChannel
+                channel.enableVibration(false)
+                notificationManager.createNotificationChannel(channel)
+            }
         }
 
         val builder = Builder(context, notificationChannel)

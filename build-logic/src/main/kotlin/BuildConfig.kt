@@ -7,7 +7,7 @@ object BuildConfig {
         get() = System.getProperty("demeterGroup")
 
     internal const val compileSdk = 36
-    internal const val minSdk = 26
+    internal const val minSdk = 22
 
-    internal const val javaVersion = 21
+    internal const val javaVersion = 17
 }

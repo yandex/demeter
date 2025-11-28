@@ -1,11 +1,13 @@
 package com.yandex.demeter.profiler.inject.internal.ui
 
+import android.os.Build
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseExpandableListAdapter
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
 import com.yandex.demeter.internal.WarningLevel
 import com.yandex.demeter.internal.WarningLevel.First
 import com.yandex.demeter.internal.WarningLevel.Second
@@ -110,62 +112,37 @@ internal class ExpandableMetricsListAdapter : BaseExpandableListAdapter() {
 
         fun bindView(metricViewDescription: TimeMetricViewItem) {
             tvClassName.text = metricViewDescription.simpleName
-            tvInitTime.text = Html.fromHtml(metricViewDescription.description, 0)
+            tvInitTime.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(metricViewDescription.description, 0)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(metricViewDescription.description)
+            }
             val resources = tvClassName.context.resources
 
             when (WarningLevel.getLevel(metricViewDescription.totalInitTime)) {
                 Zero -> {
                     root.setBackgroundResource(R.color.d2m_transparent)
-                    tvInitTime.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_default_description,
-                            null
-                        )
-                    )
-                    tvClassName.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_default_title,
-                            null
-                        )
-                    )
+                    tvInitTime.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_default_description, null))
+                    tvClassName.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_default_title, null))
                 }
 
                 First -> {
                     root.setBackgroundResource(R.color.d2m_bg_warning_1)
-                    tvClassName.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_warning_1_and_2,
-                            null
-                        )
-                    )
-                    tvInitTime.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_warning_1_and_2,
-                            null
-                        )
-                    )
+                    tvClassName.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_1_and_2, null))
+                    tvInitTime.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_1_and_2, null))
                 }
 
                 Second -> {
                     root.setBackgroundResource(R.color.d2m_bg_warning_2)
-                    tvClassName.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_warning_1_and_2,
-                            null
-                        )
-                    )
-                    tvInitTime.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_warning_1_and_2,
-                            null
-                        )
-                    )
+                    tvClassName.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_1_and_2, null))
+                    tvInitTime.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_1_and_2, null))
                 }
 
                 Third -> {
                     root.setBackgroundResource(R.color.d2m_bg_warning_3)
-                    tvClassName.setTextColor(resources.getColor(R.color.d2m_font_warning_3, null))
-                    tvInitTime.setTextColor(resources.getColor(R.color.d2m_font_warning_3, null))
+                    tvClassName.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_3, null))
+                    tvInitTime.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_3, null))
                 }
             }
         }
@@ -177,46 +154,31 @@ internal class ExpandableMetricsListAdapter : BaseExpandableListAdapter() {
         fun bindView(metricDescription: TimeMetricViewItem) {
             val resources = tvTreeDescription.context.resources
             val description = metricDescription.description
-            tvTreeDescription.text = Html.fromHtml(description, 0)
+            tvTreeDescription.text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                Html.fromHtml(description, 0)
+            } else {
+                @Suppress("DEPRECATION")
+                Html.fromHtml(description)
+            }
             when (WarningLevel.getLevel(metricDescription.totalInitTime)) {
                 Zero -> {
                     tvTreeDescription.setBackgroundResource(R.color.d2m_transparent)
-                    tvTreeDescription.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_default_description,
-                            null
-                        )
-                    )
+                    tvTreeDescription.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_default_description, null))
                 }
 
                 First -> {
                     tvTreeDescription.setBackgroundResource(R.color.d2m_bg_warning_1)
-                    tvTreeDescription.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_warning_1_and_2,
-                            null
-                        )
-                    )
+                    tvTreeDescription.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_1_and_2, null))
                 }
 
                 Second -> {
                     tvTreeDescription.setBackgroundResource(R.color.d2m_bg_warning_2)
-                    tvTreeDescription.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_warning_1_and_2,
-                            null
-                        )
-                    )
+                    tvTreeDescription.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_1_and_2, null))
                 }
 
                 Third -> {
                     tvTreeDescription.setBackgroundResource(R.color.d2m_bg_warning_3)
-                    tvTreeDescription.setTextColor(
-                        resources.getColor(
-                            R.color.d2m_font_warning_3,
-                            null
-                        )
-                    )
+                    tvTreeDescription.setTextColor(ResourcesCompat.getColor(resources, R.color.d2m_font_warning_3, null))
                 }
             }
         }

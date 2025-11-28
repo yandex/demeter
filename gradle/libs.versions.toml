@@ -1,6 +1,6 @@
 [versions]
-androidGradlePlugin = '8.13.0'
-buildToolsCommonVersion = '31.13.0'
+androidGradlePlugin = '8.13.1'
+buildToolsCommonVersion = '31.13.1'
 
 kctfork-core = "0.5.1"
 flipper = "0.245.0"
