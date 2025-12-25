@@ -50,6 +50,7 @@ class DemeterTracerTest {
             assertEquals(300, metric.maxTime)
         }
     }
+
     @Test
     fun `collect two different events`() {
         TracerAsm.beginSection(startTimeNs = -100, fullMethodName = TEST_FULL_METHOD_NAME)

@@ -1,4 +1,4 @@
-package com.yandex.demeter.profiler.tracer.internal.ui
+package com.yandex.demeter.profiler.tracer.ui.internal
 
 import android.app.AlertDialog.Builder
 import android.content.Context
@@ -30,7 +30,7 @@ import com.yandex.demeter.internal.utils.SortType
 import com.yandex.demeter.internal.utils.SortType.ALPHABET
 import com.yandex.demeter.internal.utils.SortType.TIME
 import com.yandex.demeter.internal.utils.shareCsv
-import com.yandex.demeter.profiler.tracer.databinding.TracerDemeterPluginViewBinding
+import com.yandex.demeter.profiler.tracer.ui.databinding.TracerDemeterPluginViewBinding
 import com.yandex.demeter.profiler.tracer.internal.data.TraceMetricsRepository
 import com.yandex.demeter.profiler.tracer.internal.data.model.TraceMetric
 import com.yandex.demeter.profiler.ui.R

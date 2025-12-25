@@ -1,4 +1,4 @@
-package com.yandex.demeter.profiler.compose.internal.ui
+package com.yandex.demeter.profiler.compose.ui.internal
 
 import android.app.AlertDialog.Builder
 import android.content.Context
@@ -21,9 +21,9 @@ import com.mikepenz.fastadapter.items.AbstractItem
 import com.mikepenz.fastadapter.utils.ComparableItemListImpl
 import com.reddit.indicatorfastscroll.FastScrollItemIndicator
 import com.reddit.indicatorfastscroll.FastScrollerView
-import com.yandex.demeter.profiler.compose.databinding.ComposeDemeterPluginViewBinding
-import com.yandex.demeter.profiler.compose.internal.data.model.ComposeMetric
 import com.yandex.demeter.profiler.compose.internal.data.ComposeMetricsValues
+import com.yandex.demeter.profiler.compose.internal.data.model.ComposeMetric
+import com.yandex.demeter.profiler.compose.ui.databinding.ComposeDemeterPluginViewBinding
 import com.yandex.demeter.profiler.ui.R
 
 internal class ComposePluginView @JvmOverloads constructor(

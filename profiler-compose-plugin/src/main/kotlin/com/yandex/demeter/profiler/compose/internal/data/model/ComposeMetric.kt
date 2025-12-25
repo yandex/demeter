@@ -1,10 +1,12 @@
 package com.yandex.demeter.profiler.compose.internal.data.model
 
+import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.profiler.compose.internal.ir.recompositions.ObjectRecomposition
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectChange
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectComposition
 
-internal sealed interface ComposeMetric {
+@InternalDemeterApi
+sealed interface ComposeMetric {
     val timestamp: Long
 
     data class Changed(

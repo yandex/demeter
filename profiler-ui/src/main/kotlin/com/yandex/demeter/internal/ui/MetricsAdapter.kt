@@ -21,7 +21,7 @@ internal class MetricsAdapter : Adapter<ViewHolder>() {
             oldItem: UiDemeterPlugin,
             newItem: UiDemeterPlugin,
         ): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem.plugin.id == newItem.plugin.id
         }
     }
     private val differ = AsyncListDiffer(this, diffCallback)

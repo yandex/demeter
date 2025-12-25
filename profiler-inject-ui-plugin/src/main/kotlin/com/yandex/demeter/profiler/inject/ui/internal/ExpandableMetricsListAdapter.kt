@@ -1,4 +1,4 @@
-package com.yandex.demeter.profiler.inject.internal.ui
+package com.yandex.demeter.profiler.inject.ui.internal
 
 import android.os.Build
 import android.text.Html

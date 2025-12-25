@@ -31,7 +31,7 @@ android {
         getByName("debug") {
             demeter {
                 tracer {
-                    includedClasses = listOf("com.yandex.demeter.showcase")
+                    includedClasses = listOf("com.yandex.demeter.showcase.ui")
                 }
                 inject {
                     includedClasses = listOf("com.yandex.demeter.showcase")
@@ -55,9 +55,9 @@ dependencies {
     implementation(projects.profiler)
     implementation(projects.core)
 
-    implementation(projects.profilerTracerPlugin)
-    implementation(projects.profilerInjectPlugin)
-    implementation(projects.profilerComposePlugin)
+    implementation(projects.profilerTracerUiPlugin)
+    implementation(projects.profilerInjectUiPlugin)
+    implementation(projects.profilerComposeUiPlugin)
 
     ksp(libs.daggerCompiler)
     implementation(libs.dagger)

@@ -1,4 +1,4 @@
-package com.yandex.demeter.profiler.inject.internal.ui
+package com.yandex.demeter.profiler.inject.ui.internal
 
 import android.app.AlertDialog
 import android.content.Context
@@ -18,16 +18,15 @@ import com.yandex.demeter.internal.interceptor.UiInterceptor
 import com.yandex.demeter.internal.model.TimeMetricViewItem
 import com.yandex.demeter.internal.utils.SortType
 import com.yandex.demeter.internal.utils.shareCsv
-import com.yandex.demeter.profiler.inject.databinding.InjectDemeterPluginViewBinding
 import com.yandex.demeter.profiler.inject.internal.data.InjectMetricsRepository
 import com.yandex.demeter.profiler.inject.internal.data.model.InjectMetric
+import com.yandex.demeter.profiler.inject.ui.databinding.InjectDemeterPluginViewBinding
 import com.yandex.demeter.profiler.ui.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.Collections
 
 /**
  * Represents Inject Plugin UI.

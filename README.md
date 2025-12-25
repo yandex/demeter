@@ -63,14 +63,21 @@ plugins {
 dependencies {
     // if buildType == Dev/Debug/etc...
     implementation("com.yandex.demeter:profiler")
-    
+
     // Add plugin dependencies for Maven artifacts (required when using published artifacts)
-    // Only add the plugins you actually need:
+    // Only add the plugins you actually need
+    // It enables plain plugin with reporter that your are able to override:
     implementation("com.yandex.demeter:profiler-tracer-plugin:VERSION")  // for TracerDemeterPlugin()
     implementation("com.yandex.demeter:profiler-inject-plugin:VERSION")  // for InjectDemeterPlugin()
     implementation("com.yandex.demeter:profiler-compose-plugin:VERSION") // for ComposeDemeterPlugin()
+
+    // Also it's possible to enable UI interface. See below how to initialize it:
+    implementation("com.yandex.demeter:profiler-tracer-ui-plugin:VERSION")
+    implementation("com.yandex.demeter:profiler-inject-ui-plugin:VERSION")
+    implementation("com.yandex.demeter:profiler-compose-ui-plugin:VERSION")
 }
 ```
+
 3. Open your AndroidManifest and add:
 ```xml
 <profileable
@@ -87,7 +94,6 @@ override fun onCreate() {
     ...
     Demeter.init(
         DemeterInitializer(
-            context = this,
             plugins = listOf(
                 TracerDemeterPlugin(),  // turn on Tracer plugin
                 InjectDemeterPlugin(),  // turn on Inject plugin
@@ -98,6 +104,26 @@ override fun onCreate() {
     ...
 }
 ```
+
+If you'd like to turn on plugins UI:
+```kotlin
+override fun onCreate() {
+    super.onCreate()
+    ...
+    Demeter.init(
+        UiDemeterInitializer(
+            context = this,
+            uiPlugins = listOf(
+                TracerUiDemeterPlugin(),  // turn on Tracer plugin
+                InjectUiDemeterPlugin(),  // turn on Inject plugin
+                ComposeUiDemeterPlugin(), // turn on Compose plugin
+            ),
+        )
+    )
+    ...
+}
+```
+
 5. Configure demeter plugin. You can apply only subplugins you need:
 ```kotlin
 demeter {
@@ -152,9 +178,9 @@ plugins {
 **Main plugin applies only plugins you specified in `demeter` block**
 
 Feature plugins:
-- `demeter-tracer-gradle-plugin`
-- `demeter-inject-gradle-plugin`
-- `demeter-compose-gradle-plugin`
+- `tracer-gradle-plugin`
+- `inject-gradle-plugin`
+- `compose-gradle-plugin`
 
 ## Troubleshooting
 **Problem**: I get crash with stacktrace like

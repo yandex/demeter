@@ -8,20 +8,15 @@ plugins {
 
 android {
     namespace = "com.yandex.demeter.profiler.compose"
-
-    viewBinding.enable = true
 }
 
 dependencies {
     api(projects.profilerBase)
-    api(projects.profilerUi)
 
     implementation(libs.kotlin.reflect)
+    implementation(libs.androidx.collection)
 
     implementation(libs.compose.animation)
-
-    implementation(libs.fastadapter.core)
-    implementation(libs.fastScroll)
 }
 
 mavenPublishing {

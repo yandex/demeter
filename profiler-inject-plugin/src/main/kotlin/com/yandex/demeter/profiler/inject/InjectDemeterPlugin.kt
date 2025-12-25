@@ -1,26 +1,26 @@
 package com.yandex.demeter.profiler.inject
 
-import android.content.Context
-import android.view.View
+import com.yandex.demeter.DemeterPlugin
+import com.yandex.demeter.DemeterReporter
 import com.yandex.demeter.annotations.InternalDemeterApi
-import com.yandex.demeter.api.UiDemeterPlugin
 import com.yandex.demeter.profiler.inject.internal.data.AsmInjectMetricsHandler
-import com.yandex.demeter.profiler.inject.internal.ui.InjectPluginView
+import com.yandex.demeter.profiler.inject.internal.data.InjectMetricsReportersNotifier
 import kotlinx.coroutines.CoroutineScope
 
-class InjectDemeterPlugin : UiDemeterPlugin {
+class InjectDemeterPlugin(
+    private val reporter: DemeterReporter? = null,
+) : DemeterPlugin {
 
     @InternalDemeterApi
-    override val id: String get() = "com.yandex.demeter.profiler.inject"
-
-    @InternalDemeterApi
-    override val name: String get() = "Inject"
+    override val id: String = PLUGIN_NAME
 
     @InternalDemeterApi
     override fun init(consumerScope: CoroutineScope) {
+        reporter?.let(InjectMetricsReportersNotifier::init)
         AsmInjectMetricsHandler.init(consumerScope)
     }
 
-    @InternalDemeterApi
-    override fun ui(context: Context): View = InjectPluginView(context)
+    companion object {
+        const val PLUGIN_NAME = "com.yandex.demeter.profiler.inject"
+    }
 }

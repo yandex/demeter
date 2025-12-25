@@ -10,8 +10,6 @@ plugins {
 android {
     namespace = "com.yandex.demeter.profiler.tracer"
 
-    viewBinding.enable = true
-
     defaultConfig.testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     testOptions.unitTests.isReturnDefaultValues = true
 }
@@ -19,17 +17,11 @@ android {
 includeTests()
 
 dependencies {
-    implementation(projects.profilerBase)
-    implementation(projects.profilerUi)
+    api(projects.profilerBase)
 
     implementation(libs.kotlin.reflect)
     implementation(libs.coroutines)
     implementation(libs.androidx.collection)
-
-    implementation(libs.androidx.constraintLayout)
-    implementation(libs.fastadapter.core)
-    implementation(libs.fastadapter.extensionExpandable)
-    implementation(libs.fastScroll)
 }
 
 mavenPublishing {

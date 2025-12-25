@@ -1,12 +1,14 @@
 package com.yandex.demeter.profiler.tracer.internal.data
 
 import androidx.collection.MutableScatterMap
+import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.profiler.tracer.internal.data.model.TraceMetric
 
 /**
  * Contains trace metrics.
  */
-internal object TraceMetricsRepository {
+@InternalDemeterApi
+object TraceMetricsRepository {
     private const val INITIAL_CAPACITY = 1 shl 14
 
     private val _metrics = MutableScatterMap<String, TraceMetric>(INITIAL_CAPACITY)

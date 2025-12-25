@@ -11,7 +11,6 @@ android.namespace = "com.yandex.demeter.profiler"
 
 dependencies {
     api(projects.profilerBase)
-    implementation(projects.profilerUi)
 }
 
 mavenPublishing {

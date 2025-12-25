@@ -4,9 +4,9 @@ import android.os.SystemClock
 import android.util.Log
 import androidx.compose.runtime.Composer
 import com.yandex.demeter.annotations.InternalDemeterApi
-import com.yandex.demeter.profiler.compose.internal.ir.tracer.ComposeTracerMetricHolder.log
 import com.yandex.demeter.internal.utils.constructorProperties
 import com.yandex.demeter.profiler.compose.internal.core.TAG
+import com.yandex.demeter.profiler.compose.internal.ir.tracer.ComposeTracerMetricHolder.log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch

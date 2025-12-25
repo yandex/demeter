@@ -1,5 +1,5 @@
 package com.yandex.demeter
 
-interface Reporter {
+fun interface DemeterReporter {
   fun report(payload: Map<String, Any>)
 }

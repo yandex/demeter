@@ -16,4 +16,8 @@ java {
     withSourcesJar()
 }
 
+kotlin {
+    jvmToolchain(BuildConfig.javaVersion)
+}
+
 optInInternalDemeterApi()

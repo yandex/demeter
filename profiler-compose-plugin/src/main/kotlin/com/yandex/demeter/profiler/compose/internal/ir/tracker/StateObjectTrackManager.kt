@@ -13,8 +13,8 @@ import androidx.compose.runtime.snapshots.ObserverHandle
 import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.StateObject
 import com.yandex.demeter.annotations.InternalDemeterApi
-import com.yandex.demeter.profiler.compose.internal.data.ComposeMetricHolder
 import com.yandex.demeter.profiler.compose.internal.core.TAG
+import com.yandex.demeter.profiler.compose.internal.data.ComposeMetricHolder
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectTrackManager.trackedStateChanges
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectTrackManager.trackedStateObjects
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectTrackManager.trackerNotifier

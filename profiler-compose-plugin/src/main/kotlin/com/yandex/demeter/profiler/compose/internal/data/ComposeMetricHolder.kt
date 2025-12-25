@@ -2,6 +2,8 @@ package com.yandex.demeter.profiler.compose.internal.data
 
 import android.os.SystemClock
 import android.util.Log
+import com.yandex.demeter.profiler.compose.internal.core.TAG
+import com.yandex.demeter.profiler.compose.internal.data.model.ComposeMetric
 import com.yandex.demeter.profiler.compose.internal.data.model.ComposeMetric.Changed
 import com.yandex.demeter.profiler.compose.internal.data.model.ComposeMetric.Forgotten
 import com.yandex.demeter.profiler.compose.internal.data.model.ComposeMetric.Remembered
@@ -10,8 +12,6 @@ import com.yandex.demeter.profiler.compose.internal.ir.recompositions.Recomposit
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectChange
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectChangeNotifier
 import com.yandex.demeter.profiler.compose.internal.ir.tracker.StateObjectComposition
-import com.yandex.demeter.profiler.compose.internal.data.model.ComposeMetric
-import com.yandex.demeter.profiler.compose.internal.core.TAG
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch

@@ -8,19 +8,15 @@ plugins {
 
 android {
     namespace = "com.yandex.demeter.profiler.inject"
-
-    viewBinding.enable = true
 }
 
 dependencies {
     api(projects.profilerBase)
-    api(projects.profilerUi)
 
     implementation(libs.kotlin.reflect)
     implementation(libs.coroutines)
 
     implementation(libs.androidx.core)
-    implementation(libs.androidx.constraintLayout)
 }
 
 mavenPublishing {

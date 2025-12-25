@@ -23,7 +23,7 @@ abstract class AbstractInjectAsm(
                 initializedClass = initializedClass,
                 className = className,
                 startTimeNs = startTimeNs,
-                finishTimeNs =finishTimeNs,
+                finishTimeNs = finishTimeNs,
                 threadName = Thread.currentThread().name,
             )
         )

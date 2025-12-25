@@ -10,6 +10,7 @@ android.namespace = "com.yandex.demeter.flipper"
 
 dependencies {
     api(projects.core)
+    implementation(projects.profilerBase)
 
     implementation(libs.flipper.core)
 }

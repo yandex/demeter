@@ -12,15 +12,19 @@ import com.yandex.demeter.internal.core.UiConfig
 import com.yandex.demeter.profiler.ui.R
 import com.yandex.demeter.internal.ui.MetricsActivity
 
-object DemeterUiInitializer {
+class UiDemeterInitializer(
+    private val context: Context,
+    private val uiPlugins: List<UiDemeterPlugin>,
+) : Demeter.Initializer {
+    override fun init(): Demeter.Core {
+        val plugins = uiPlugins.map { it.plugin }
 
-    fun init(
-        context: Context,
-        plugins: List<DemeterPlugin> = listOf(),
-    ) {
-        UiConfig.plugins = plugins.filterIsInstance<UiDemeterPlugin>()
-        if (UiConfig.plugins.isNotEmpty()) {
-            showNotification(context)
+        return DemeterCoreInitializer.init(plugins).also {
+            UiConfig.plugins = uiPlugins
+
+            if (UiConfig.plugins.isNotEmpty()) {
+                showNotification(context)
+            }
         }
     }
 

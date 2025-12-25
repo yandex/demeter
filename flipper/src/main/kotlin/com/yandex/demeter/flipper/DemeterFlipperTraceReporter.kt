@@ -1,9 +1,9 @@
 package com.yandex.demeter.flipper
 
 import com.facebook.flipper.core.FlipperObject
-import com.yandex.demeter.Reporter
+import com.yandex.demeter.DemeterReporter
 
-object DemeterFlipperTraceReporter : Reporter {
+object DemeterFlipperTraceReporter : DemeterReporter {
     private const val DURATION_KEY = "ms"
     private const val FLIPPER_THRESHOLD_MS = 50L
 

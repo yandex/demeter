@@ -4,7 +4,8 @@ import androidx.compose.runtime.Composer
 import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.profiler.compose.internal.data.ComposeMetricHolder.recompositionsNotifier
 
-internal data class ObjectRecomposition(
+@InternalDemeterApi
+data class ObjectRecomposition(
     val composableFunctionName: String,
     val fileNameWithPackage: String,
 ) {
@@ -12,7 +13,8 @@ internal data class ObjectRecomposition(
         "$fileNameWithPackage#$composableFunctionName"
 }
 
-internal interface RecompositionNotifier {
+@InternalDemeterApi
+interface RecompositionNotifier {
     fun recomposed(recomposition: ObjectRecomposition)
 
     fun skipped(recomposition: ObjectRecomposition)

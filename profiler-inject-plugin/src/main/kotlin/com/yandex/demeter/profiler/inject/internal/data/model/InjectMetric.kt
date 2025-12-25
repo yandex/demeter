@@ -1,9 +1,11 @@
 package com.yandex.demeter.profiler.inject.internal.data.model
 
+import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.internal.model.TimeMetric
 import java.lang.reflect.Proxy
 
-internal data class InjectMetric(
+@InternalDemeterApi
+data class InjectMetric(
     val cls: Class<*>,
     val initTime: Long = 0,
     val instanceNo: Int = 0,

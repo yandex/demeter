@@ -1,38 +1,37 @@
 package com.yandex.demeter.profiler.tracer.internal.data
 
-import com.yandex.demeter.Reporter
+import com.yandex.demeter.DemeterReporter
+import com.yandex.demeter.internal.reporter.MetricsReportersNotifier
 import com.yandex.demeter.profiler.tracer.internal.data.model.TraceMetric
-import java.time.Instant
-import java.time.ZoneId
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-/**
- * Sends metrics to configured reporters (like Flipper app).
- */
-internal object TraceMetricsReportersNotifier {
+internal object TraceMetricsReportersNotifier : MetricsReportersNotifier<TraceMetric> {
     private const val PAYLOAD_PARAMETERS_COUNT = 7
 
-    private var reporters: List<Reporter> = emptyList()
+    private var reporter: DemeterReporter? = null
 
-    fun init(reporters: List<Reporter>) {
-        this.reporters = reporters
+    fun init(reporter: DemeterReporter) {
+        this.reporter = reporter
     }
 
-    internal fun report(traceMetric: TraceMetric) {
-        if (reporters.isNotEmpty()) {
+    override fun report(metric: TraceMetric) {
+        reporter?.let {
             val payload = HashMap<String, Any>(PAYLOAD_PARAMETERS_COUNT).apply {
-                put("id", traceMetric.id)
+                put("id", metric.id)
                 put(
                     "timestamp",
-                    Instant.ofEpochMilli(traceMetric.startTimes.last())
-                        .atZone(ZoneId.systemDefault()).toLocalTime()
+                    SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
+                        .format(Date(metric.startTimes.last()))
                 )
-                put("className", traceMetric.className)
-                put("methodName", traceMetric.methodName)
-                put("ms", traceMetric.durations.last()) // key used in demeter-flipper
-                put("count", traceMetric.count)
-                put("thread", traceMetric.threadName)
+                put("className", metric.className)
+                put("methodName", metric.methodName)
+                put("ms", metric.durations.last()) // key used in demeter-flipper
+                put("count", metric.count)
+                put("thread", metric.threadName)
             }
-            reporters.forEach { it.report(payload) }
+            it.report(payload)
         }
     }
 }

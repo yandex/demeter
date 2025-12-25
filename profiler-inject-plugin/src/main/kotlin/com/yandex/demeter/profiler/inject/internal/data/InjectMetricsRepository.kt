@@ -1,5 +1,6 @@
 package com.yandex.demeter.profiler.inject.internal.data
 
+import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.internal.utils.constructorProperties
 import com.yandex.demeter.profiler.inject.internal.data.model.AsmInjectMetric
 import com.yandex.demeter.profiler.inject.internal.data.model.InjectMetric
@@ -10,7 +11,8 @@ import kotlin.reflect.jvm.jvmName
 /**
  * Contains inject metrics.
  */
-internal object InjectMetricsRepository {
+@InternalDemeterApi
+object InjectMetricsRepository {
 
     private val initCounter = ConcurrentHashMap<String, Int>()
 
@@ -21,6 +23,7 @@ internal object InjectMetricsRepository {
     fun putMetric(metric: AsmInjectMetric) {
         val handledBefore = _initializedMetrics.containsKey(metric.initializedClass.name)
         if (handledBefore) putExistingMetric(metric) else putNewMetric(metric)
+        InjectMetricsReportersNotifier.report(metric)
     }
 
     private fun putNewMetric(metric: AsmInjectMetric) {
