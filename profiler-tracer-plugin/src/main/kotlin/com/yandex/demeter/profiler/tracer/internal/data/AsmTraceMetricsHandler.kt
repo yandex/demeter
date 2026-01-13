@@ -1,44 +1,31 @@
 package com.yandex.demeter.profiler.tracer.internal.data
 
+import android.content.Context
 import com.yandex.demeter.profiler.tracer.internal.asm.TracerAsm
-import com.yandex.demeter.profiler.tracer.internal.data.model.AsmTraceMetric
-import com.yandex.demeter.profiler.tracer.internal.data.model.TraceMetric
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
- * Class responsible for mapping raw metrics in background
+ * Class responsible for collecting raw ASM metrics and persisting them to database.
  */
 internal object AsmTraceMetricsHandler {
-    private var handleJob: Job? = null
+    private var collectJob: Job? = null
+    private lateinit var repository: TraceMetricsRepository
 
-    fun init(consumerScope: CoroutineScope) {
-        collectMetrics(consumerScope)
+    fun init(context: Context, consumerScope: CoroutineScope) {
+        repository = TraceMetricsRepositoryImpl.getInstance(context)
+        startCollecting(consumerScope)
     }
 
-    private fun collectMetrics(consumerScope: CoroutineScope) {
-        handleJob?.cancel()
-        TraceMetricsRepository.clear()
-        handleJob = TracerAsm.metricsQueue
-            .onEach(this::handleMetric)
-            .launchIn(consumerScope)
-    }
-
-    private fun handleMetric(asmMetric: AsmTraceMetric) {
-        val traceMetric = TraceMetricsRepository.getOrPutMetric(asmMetric.id) {
-            TraceMetric(
-                asmMetric.id,
-                asmMetric.className,
-                asmMetric.methodName
-            )
+    private fun startCollecting(scope: CoroutineScope) {
+        collectJob?.cancel()
+        collectJob = scope.launch {
+            repository.clear()
+            TracerAsm.metricsQueue.collect { metric ->
+                repository.upsertMetric(metric)
+                TraceMetricsReportersNotifier.report(metric)
+            }
         }
-
-        traceMetric.startTimes.add(asmMetric.startTimeMs)
-        traceMetric.durations.add(asmMetric.durationMs)
-        traceMetric.threadNames.add(asmMetric.threadName)
-
-        TraceMetricsReportersNotifier.report(traceMetric)
     }
 }

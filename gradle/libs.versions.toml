@@ -45,6 +45,9 @@ compose-activity = "1.11.0"
 
 vanniktech-maven-publish = "0.34.0"
 
+room = "2.7.1"
+paging = "3.3.6"
+
 [libraries]
 androidx-material = { group = "com.google.android.material", name = "material", version.ref = "androidXMaterial" }
 androidx-fragment = { group = "androidx.fragment", name = "fragment", version.ref = "androidXFragment" }
@@ -58,6 +61,13 @@ androidx-collection = { group = "androidx.collection", name = "collection", vers
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidXJUnit" }
 androidx-junit-ktx = { group = "androidx.test.ext", name = "junit-ktx", version.ref = "androidXJUnit" }
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidXEspresso" }
+
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-paging = { module = "androidx.room:room-paging", version.ref = "room" }
+paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "paging" }
+paging-common = { module = "androidx.paging:paging-common", version.ref = "paging" }
 
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-gradlePluginApi = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin-api", version.ref = "kotlin" }

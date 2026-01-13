@@ -3,40 +3,37 @@ package com.yandex.demeter.profiler.tracer.ui.internal
 import android.app.AlertDialog.Builder
 import android.content.Context
 import android.content.DialogInterface
-import android.text.Html
 import android.util.AttributeSet
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
-import android.widget.TextView
 import androidx.annotation.AttrRes
-import androidx.annotation.ColorRes
 import androidx.annotation.StyleRes
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.mikepenz.fastadapter.FastAdapter
-import com.mikepenz.fastadapter.adapters.ItemAdapter
-import com.mikepenz.fastadapter.items.AbstractItem
-import com.mikepenz.fastadapter.utils.ComparableItemListImpl
 import com.reddit.indicatorfastscroll.FastScrollItemIndicator
 import com.reddit.indicatorfastscroll.FastScrollerView
 import com.yandex.demeter.Demeter
 import com.yandex.demeter.internal.DemeterCore
-import com.yandex.demeter.internal.WarningLevel
 import com.yandex.demeter.internal.interceptor.UiInterceptor
 import com.yandex.demeter.internal.utils.SortType
 import com.yandex.demeter.internal.utils.SortType.ALPHABET
 import com.yandex.demeter.internal.utils.SortType.TIME
 import com.yandex.demeter.internal.utils.shareCsv
 import com.yandex.demeter.profiler.tracer.ui.databinding.TracerDemeterPluginViewBinding
-import com.yandex.demeter.profiler.tracer.internal.data.TraceMetricsRepository
-import com.yandex.demeter.profiler.tracer.internal.data.model.TraceMetric
+import com.yandex.demeter.profiler.tracer.internal.data.TraceMetricsRepositoryImpl
+import com.yandex.demeter.profiler.tracer.internal.data.db.TraceMetricEntity
+import com.yandex.demeter.profiler.tracer.internal.data.db.asTimeMetrics
 import com.yandex.demeter.profiler.ui.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -68,13 +65,17 @@ internal class TracerPluginView @JvmOverloads constructor(
     private val threadsFilters = (Demeter.instance as DemeterCore).threadsFilters
     private var appliedThreadFilter: Int? = null
 
-    private var comparator: Comparator<TraceMetricViewItem> = TimeComparatorDescending()
+    private var currentSortType: SortType = TIME
 
-    private val comparableListItem = ComparableItemListImpl(comparator)
-    private val adapter = ItemAdapter(comparableListItem)
+    private val pagingAdapter = TraceMetricPagingAdapter()
 
+    private val repository = TraceMetricsRepositoryImpl.getInstance(context)
     private val scope = CoroutineScope(Dispatchers.Main)
-    private var job: Job? = null
+    private var metricsJob: Job? = null
+    private var exportJob: Job? = null
+
+    private val hasFiltersApplied: Boolean
+        get() = appliedEventsFilter != null || appliedThreadFilter != null
 
     init {
         layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, MATCH_PARENT)
@@ -84,7 +85,8 @@ internal class TracerPluginView @JvmOverloads constructor(
             setOnClickListener {
                 showFilterDialog(interceptorEventsList) { which ->
                     appliedEventsFilter = which
-                    applyFilter()
+                    text = interceptorEventsList[which].name
+                    observeMetrics()
                 }
             }
         }
@@ -93,7 +95,8 @@ internal class TracerPluginView @JvmOverloads constructor(
             setOnClickListener {
                 showFilterDialog(threadsFilters) { which ->
                     appliedThreadFilter = which
-                    applyFilter()
+                    text = threadsFilters[which].name
+                    observeMetrics()
                 }
             }
         }
@@ -102,7 +105,7 @@ internal class TracerPluginView @JvmOverloads constructor(
         }
 
         lvMetrics.layoutManager = LinearLayoutManager(context)
-        lvMetrics.adapter = FastAdapter.with(adapter)
+        lvMetrics.adapter = pagingAdapter
         lvMetrics.itemAnimator = null
         lvMetrics.addItemDecoration(
             DividerItemDecoration(
@@ -111,21 +114,22 @@ internal class TracerPluginView @JvmOverloads constructor(
             )
         )
         binding.export.setOnClickListener {
-            job?.cancel()
-            job = scope.launch(Dispatchers.IO) {
-                shareCsv(
-                    binding.root.context,
-                    TraceMetricsRepository.metrics.values,
-                    "tracer"
-                )
+            exportJob?.cancel()
+            exportJob = scope.launch(Dispatchers.IO) {
+                val metrics = repository.getMetricsFlow(currentSortType).first()
+                shareCsv(context, metrics.asTimeMetrics(), "tracer")
             }
         }
         binding.fastscroller.apply {
             setupWithRecyclerView(
                 binding.lvMetrics,
                 { position ->
-                    val item = adapter.getAdapterItem(position)
-                    FastScrollItemIndicator.Text(item.name.substring(0, 1).uppercase())
+                    val name = pagingAdapter.getItemName(position)
+                    if (name != null) {
+                        FastScrollItemIndicator.Text(name.first().uppercaseChar().toString())
+                    } else {
+                        FastScrollItemIndicator.Text("")
+                    }
                 },
                 useDefaultScroller = false
             )
@@ -136,43 +140,56 @@ internal class TracerPluginView @JvmOverloads constructor(
                     indicatorCenterY: Int,
                     itemPosition: Int
                 ) {
-                    binding.lvMetrics.apply {
-                        scrollToPosition(itemPosition)
-                    }
+                    binding.lvMetrics.scrollToPosition(itemPosition)
                 }
             }
         }
         binding.fastscrollerThumb.setupWithFastScroller(binding.fastscroller)
+
+        pagingAdapter.addLoadStateListener {
+            updateEmptyState()
+        }
     }
 
-    private fun applyFilter() {
-        var items = TraceMetricsRepository.metrics.values.toList()
+    private fun observeMetrics() {
+        metricsJob?.cancel()
+        metricsJob = scope.launch {
+            if (hasFiltersApplied) {
+                repository.getMetricsFlow(currentSortType)
+                    .map { metrics -> applyFilters(metrics) }
+                    .flowOn(Dispatchers.Default)
+                    .collectLatest { filteredMetrics ->
+                        pagingAdapter.submitData(PagingData.from(filteredMetrics))
+                    }
+            } else {
+                repository.getMetricsPaged(currentSortType)
+                    .collectLatest { pagingData ->
+                        pagingAdapter.submitData(pagingData)
+                    }
+            }
+        }
+    }
+
+    private fun applyFilters(metrics: List<TraceMetricEntity>): List<TraceMetricEntity> {
+        var wrappedItems = metrics.asTimeMetrics()
 
         appliedEventsFilter?.let { which ->
-            items = interceptorEventsList[which].intercept(items)
-            binding.btnMenu.text = interceptorEventsList[which].name
+            wrappedItems = interceptorEventsList[which].intercept(wrappedItems)
         }
 
         appliedThreadFilter?.let { which ->
-            items = threadsFilters[which].intercept(items)
-            binding.threadFilter.text = threadsFilters[which].name
+            wrappedItems = threadsFilters[which].intercept(wrappedItems)
         }
 
-        adapter.setNewList(items.asTraceMetrics())
+        return wrappedItems.map { it.wrapped }
     }
 
-    private fun showFilterDialog(interceptor: List<UiInterceptor>, appliedFilter: (Int) -> Unit) {
-        val transformerNames = arrayOfNulls<String>(interceptor.size)
-        for (i in interceptor.indices) {
-            transformerNames[i] = interceptor[i].name
-        }
-        val builder = Builder(context).apply {
-            setTitle(R.string.settings)
-            setItems(transformerNames) { _, which: Int ->
-                appliedFilter(which)
-            }
-        }
-        builder.create().show()
+    private fun showFilterDialog(interceptors: List<UiInterceptor>, onFilterSelected: (Int) -> Unit) {
+        val names = interceptors.map { it.name }.toTypedArray()
+        Builder(context)
+            .setTitle(R.string.settings)
+            .setItems(names) { _, which -> onFilterSelected(which) }
+            .show()
     }
 
     private fun showSortDialog() {
@@ -184,123 +201,36 @@ internal class TracerPluginView @JvmOverloads constructor(
                     TIME.name
                 )
             ) { _: DialogInterface?, which: Int ->
-                job?.cancel()
-                job = scope.launch {
-                    comparator = when (SortType.entries[which]) {
-                        ALPHABET -> {
-                            binding.fastscroller.visibility = VISIBLE
-                            AlphabetComparatorAscending()
-                        }
-
-                        TIME -> {
-                            binding.fastscroller.visibility = GONE
-                            TimeComparatorDescending()
-                        }
-                    }
-                    comparableListItem.withComparator(comparator, sortNow = true)
+                currentSortType = SortType.entries[which]
+                binding.fastscroller.visibility = when (currentSortType) {
+                    ALPHABET -> VISIBLE
+                    TIME -> GONE
                 }
+                observeMetrics()
             }
-
             .create()
             .show()
     }
 
-    private inner class AlphabetComparatorAscending : Comparator<TraceMetricViewItem> {
-        override fun compare(lhs: TraceMetricViewItem, rhs: TraceMetricViewItem): Int {
-            return lhs.name.compareTo(rhs.name)
-        }
-    }
-
-    private inner class TimeComparatorDescending : Comparator<TraceMetricViewItem> {
-        override fun compare(lhs: TraceMetricViewItem, rhs: TraceMetricViewItem): Int {
-            return rhs.time.compareTo(lhs.time)
-        }
-    }
-
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        adapter.setNewList(TraceMetricsRepository.metrics.values.asTraceMetrics(), false)
-        invalidate()
+        observeMetrics()
     }
 
-    override fun invalidate() {
-        if (adapter.adapterItemCount == 0) {
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        metricsJob?.cancel()
+        exportJob?.cancel()
+    }
+
+    private fun updateEmptyState() {
+        if (pagingAdapter.itemCount == 0) {
             tvEmpty.visibility = VISIBLE
             lvMetrics.visibility = GONE
             tvEmpty.setText(R.string.no_collected_data)
         } else {
             tvEmpty.visibility = GONE
             lvMetrics.visibility = VISIBLE
-        }
-    }
-
-    private fun Collection<TraceMetric>.asTraceMetrics(): List<TraceMetricViewItem> {
-        return map { it.asViewItem() }.toList()
-    }
-
-    private fun TraceMetric.asViewItem(): TraceMetricViewItem {
-        val (background, textColor) = when (WarningLevel.getLevel(maxTime)) {
-            WarningLevel.Zero -> R.color.d2m_transparent to R.color.d2m_font_default_description
-            WarningLevel.First -> R.color.d2m_bg_warning_1 to R.color.d2m_font_warning_1_and_2
-            WarningLevel.Second -> R.color.d2m_bg_warning_2 to R.color.d2m_font_warning_1_and_2
-            WarningLevel.Third -> R.color.d2m_bg_warning_3 to R.color.d2m_font_warning_3
-        }
-        return TraceMetricViewItem(
-            name = simpleName,
-            description = colorizeDescription(),
-            time = maxTime,
-            backgroundRes = background,
-            textColor = textColor,
-        )
-    }
-
-    private fun TraceMetric.colorizeDescription(): String {
-        val warningLevel = WarningLevel.getLevel(maxTime)
-        return with(StringBuilder("Max time: ")) {
-            if (warningLevel != WarningLevel.Zero) {
-                append("<b><font color='#9C27B0'>")
-            }
-            append(maxTime)
-            append("ms, ")
-            if (warningLevel != WarningLevel.Zero) {
-                append("</font></b>")
-            }
-            append("entered ")
-            append(count)
-            append(" times")
-            append(" <font color='#00BFA5'>($threadName)</font>")
-        }.toString()
-    }
-
-    private class TraceMetricViewItem(
-        val name: String,
-        val description: String,
-        val time: Long,
-        @ColorRes val backgroundRes: Int,
-        @ColorRes val textColor: Int
-    ) : AbstractItem<TraceMetricViewItem.ViewHolder>() {
-
-        override val type: Int = R.id.trace_metrics_item_id
-
-        override val layoutRes: Int = R.layout.adm_list_item_trace_metrics
-
-        override fun getViewHolder(v: View) = ViewHolder(v)
-
-        private class ViewHolder(view: View) : FastAdapter.ViewHolder<TraceMetricViewItem>(view) {
-            var name: TextView = view.findViewById(R.id.tvClassName)
-            var description: TextView = view.findViewById(R.id.tvInitTime)
-
-            override fun bindView(item: TraceMetricViewItem, payloads: List<Any>) {
-                name.text = item.name
-                description.text = Html.fromHtml(item.description)
-                itemView.setBackgroundResource(item.backgroundRes)
-                description.setTextColor(itemView.resources.getColor(item.textColor))
-            }
-
-            override fun unbindView(item: TraceMetricViewItem) {
-                name.text = null
-                description.text = null
-            }
         }
     }
 }

@@ -5,6 +5,7 @@ import extensions.includeTests
 plugins {
     alias(libs.plugins.module.android.base)
     alias(libs.plugins.vanniktech.maven.publish)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -22,6 +23,13 @@ dependencies {
     implementation(libs.kotlin.reflect)
     implementation(libs.coroutines)
     implementation(libs.androidx.collection)
+
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    implementation(libs.room.paging)
+    ksp(libs.room.compiler)
+
+    api(libs.paging.common)
 }
 
 mavenPublishing {

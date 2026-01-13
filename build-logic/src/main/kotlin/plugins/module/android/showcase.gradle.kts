@@ -15,7 +15,11 @@ group = BuildConfig.demeterGroup
 version = BuildConfig.demeterVersion
 
 androidApp {
-    compileSdk = BuildConfig.compileSdk
+    compileSdk {
+        version = release(BuildConfig.compileSdkMajor) {
+            minorApiLevel = BuildConfig.compileSdkMinor
+        }
+    }
 
     defaultConfig {
         minSdk = BuildConfig.minSdk

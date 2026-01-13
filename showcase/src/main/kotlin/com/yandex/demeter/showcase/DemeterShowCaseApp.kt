@@ -20,6 +20,7 @@ class DemeterShowCaseApp : Application() {
                 context = this,
                 uiPlugins = listOf(
                     TracerUiDemeterPlugin(
+                        context = this,
                         reporter = { payload -> Log.i(TAG, "[Tracer payload] $payload") }
                     ),
                     InjectUiDemeterPlugin(

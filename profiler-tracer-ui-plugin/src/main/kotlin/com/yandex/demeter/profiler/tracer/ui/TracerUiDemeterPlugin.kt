@@ -10,13 +10,14 @@ import com.yandex.demeter.profiler.tracer.TracerDemeterPlugin
 import com.yandex.demeter.profiler.tracer.ui.internal.TracerPluginView
 
 class TracerUiDemeterPlugin(
+    context: Context,
     reporter: DemeterReporter? = null,
 ) : UiDemeterPlugin {
     @InternalDemeterApi
     override val name: String get() = "Tracer"
 
     @InternalDemeterApi
-    override val plugin: DemeterPlugin = TracerDemeterPlugin(reporter)
+    override val plugin: DemeterPlugin = TracerDemeterPlugin(context.applicationContext, reporter)
 
     @InternalDemeterApi
     override fun ui(context: Context): View = TracerPluginView(context)

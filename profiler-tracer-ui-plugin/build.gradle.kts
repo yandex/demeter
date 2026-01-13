@@ -21,6 +21,7 @@ dependencies {
     implementation(libs.fastadapter.core)
     implementation(libs.fastadapter.extensionExpandable)
     implementation(libs.fastScroll)
+    implementation(libs.paging.runtime)
 }
 
 mavenPublishing {
