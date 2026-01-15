@@ -10,6 +10,10 @@
   <string name="threshold_filter_dialog_title">Filter by threshold</string>
   <string name="sort_title">Sort by</string>
   <string name="export_title">Export log</string>
+  <string name="export_format_dialog_title">Export format</string>
+  <string name="export_format_csv">Aggregated metrics (csv)</string>
+  <string name="export_format_flamegraph">Flame Graph (txt)</string>
+  <string name="export_format_firefox_profiler">Firefox Frofiler (json)</string>
   <string name="thread_filter">thread</string>
   <string name="no_collected_data">No collected data</string>
   <string name="emulator_not_supported">Emulator not supported</string>

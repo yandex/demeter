@@ -28,13 +28,39 @@ abstract class TracerClassVisitorFactory : AsmClassVisitorFactory<TracerParams> 
     }
 
     override fun isInstrumentable(classData: ClassData): Boolean {
-        return parameters.get().includedClasses.getOrElse(emptyList())
-            .any { classData.className.startsWith(it) }
-            && parameters.get().excludedClasses.getOrElse(emptyList())
-            .none { classData.className.startsWith(it) }
-            && !classData.isKtIntrinsics
-            && (!classData.className.startsWith("com.yandex.demeter")
-            || classData.className.startsWith("com.yandex.demeter.showcase"))
+        val className = classData.className
+
+        if (className.startsWith("java.") ||
+            className.startsWith("javax.") ||
+            className.startsWith("kotlin.") ||
+            className.startsWith("kotlinx.")
+        ) {
+            return false
+        }
+
+        if (className.startsWith("com.reddit.indicatorfastscroll")) {
+            return false
+        }
+
+        if (className.startsWith("com.yandex.demeter") &&
+            !className.startsWith("com.yandex.demeter.showcase")
+        ) {
+            return false
+        }
+
+        if (classData.isKtIntrinsics) {
+            return false
+        }
+
+        val includedClasses = parameters.get().includedClasses.getOrElse(emptyList())
+        val excludedClasses = parameters.get().excludedClasses.getOrElse(emptyList())
+
+        if (includedClasses.isEmpty()) {
+            return false
+        }
+
+        return includedClasses.any { className.startsWith(it) } &&
+            excludedClasses.none { className.startsWith(it) }
     }
 
     private fun isAsmDebug(): Boolean {

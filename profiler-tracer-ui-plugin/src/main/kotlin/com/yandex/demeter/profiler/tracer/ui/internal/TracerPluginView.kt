@@ -21,17 +21,19 @@ import com.yandex.demeter.internal.interceptor.UiInterceptor
 import com.yandex.demeter.internal.utils.SortType
 import com.yandex.demeter.internal.utils.SortType.ALPHABET
 import com.yandex.demeter.internal.utils.SortType.TIME
-import com.yandex.demeter.internal.utils.shareCsv
+import com.yandex.demeter.internal.utils.shareRawCsv
+import com.yandex.demeter.internal.utils.shareFlameGraph
+import com.yandex.demeter.internal.utils.shareTrace
 import com.yandex.demeter.profiler.tracer.ui.databinding.TracerDemeterPluginViewBinding
 import com.yandex.demeter.profiler.tracer.internal.data.TraceMetricsRepositoryImpl
 import com.yandex.demeter.profiler.tracer.internal.data.db.TraceMetricEntity
+import com.yandex.demeter.profiler.tracer.internal.data.db.asRawTraceMetrics
 import com.yandex.demeter.profiler.tracer.internal.data.db.asTimeMetrics
 import com.yandex.demeter.profiler.ui.R
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -114,11 +116,7 @@ internal class TracerPluginView @JvmOverloads constructor(
             )
         )
         binding.export.setOnClickListener {
-            exportJob?.cancel()
-            exportJob = scope.launch(Dispatchers.IO) {
-                val metrics = repository.getMetricsFlow(currentSortType).first()
-                shareCsv(context, metrics.asTimeMetrics(), "tracer")
-            }
+            showExportFormatDialog()
         }
         binding.fastscroller.apply {
             setupWithRecyclerView(
@@ -207,6 +205,37 @@ internal class TracerPluginView @JvmOverloads constructor(
                     TIME -> GONE
                 }
                 observeMetrics()
+            }
+            .create()
+            .show()
+    }
+
+    private fun showExportFormatDialog() {
+        val formats = arrayOf(
+            context.getString(R.string.export_format_csv),
+            context.getString(R.string.export_format_flamegraph),
+            context.getString(R.string.export_format_firefox_profiler)
+        )
+        Builder(context)
+            .setTitle(R.string.export_format_dialog_title)
+            .setItems(formats) { _: DialogInterface?, which: Int ->
+                exportJob?.cancel()
+                exportJob = scope.launch(Dispatchers.IO) {
+                    val rawMetrics = repository.getAllRawMetrics().asRawTraceMetrics()
+                    when (which) {
+                        0 -> {
+                            shareRawCsv(context, rawMetrics, "tracer")
+                        }
+
+                        1 -> {
+                            shareFlameGraph(context, rawMetrics, "tracer")
+                        }
+
+                        2 -> {
+                            shareTrace(context, rawMetrics, "tracer")
+                        }
+                    }
+                }
             }
             .create()
             .show()

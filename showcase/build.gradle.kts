@@ -31,7 +31,7 @@ android {
         getByName("debug") {
             demeter {
                 tracer {
-                    includedClasses = listOf("com.yandex.demeter.showcase.ui")
+                    includedClasses = listOf("com.yandex.demeter")
                 }
                 inject {
                     includedClasses = listOf("com.yandex.demeter.showcase")

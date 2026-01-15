@@ -6,6 +6,7 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.yandex.demeter.annotations.InternalDemeterApi
 import com.yandex.demeter.internal.utils.SortType
+import com.yandex.demeter.profiler.tracer.internal.data.db.MethodStatsEntity
 import com.yandex.demeter.profiler.tracer.internal.data.db.TraceMetricDao
 import com.yandex.demeter.profiler.tracer.internal.data.db.TraceMetricEntity
 import com.yandex.demeter.profiler.tracer.internal.data.db.TraceMetricRawEntity
@@ -21,6 +22,14 @@ interface TraceMetricsRepository {
     fun getMetricsPaged(sortType: SortType): Flow<PagingData<TraceMetricEntity>>
     suspend fun upsertMetric(asmMetric: AsmTraceMetric)
     suspend fun clear()
+
+    suspend fun getCallStackForExecution(executionId: Long): List<TraceMetricRawEntity>
+    suspend fun getCallTree(rootExecutionId: Long): List<TraceMetricRawEntity>
+    suspend fun getChildCalls(executionId: Long): List<TraceMetricRawEntity>
+    suspend fun getSlowRootCalls(thresholdMs: Long): List<TraceMetricRawEntity>
+    suspend fun getCallsInTimeRange(startMs: Long, endMs: Long): List<TraceMetricRawEntity>
+    suspend fun getMethodStats(): List<MethodStatsEntity>
+    suspend fun getAllRawMetrics(): List<TraceMetricRawEntity>
 }
 
 @InternalDemeterApi
@@ -55,13 +64,45 @@ class TraceMetricsRepositoryImpl private constructor(
                 methodName = asmMetric.methodName,
                 durationMs = asmMetric.durationMs,
                 startTimeMs = asmMetric.startTimeMs,
-                threadName = asmMetric.threadName
+                threadName = asmMetric.threadName,
+                executionId = asmMetric.executionId,
+                parentExecutionId = asmMetric.parentExecutionId,
+                parentMethodId = asmMetric.parentMethodId,
+                depth = asmMetric.depth,
             )
         )
     }
 
     override suspend fun clear() {
         dao.clear()
+    }
+
+    override suspend fun getCallStackForExecution(executionId: Long): List<TraceMetricRawEntity> {
+        return dao.getCallStackForExecution(executionId)
+    }
+
+    override suspend fun getCallTree(rootExecutionId: Long): List<TraceMetricRawEntity> {
+        return dao.getCallTree(rootExecutionId)
+    }
+
+    override suspend fun getChildCalls(executionId: Long): List<TraceMetricRawEntity> {
+        return dao.getChildCalls(executionId)
+    }
+
+    override suspend fun getSlowRootCalls(thresholdMs: Long): List<TraceMetricRawEntity> {
+        return dao.getSlowRootCalls(thresholdMs)
+    }
+
+    override suspend fun getCallsInTimeRange(startMs: Long, endMs: Long): List<TraceMetricRawEntity> {
+        return dao.getCallsInTimeRange(startMs, endMs)
+    }
+
+    override suspend fun getMethodStats(): List<MethodStatsEntity> {
+        return dao.getMethodStats()
+    }
+
+    override suspend fun getAllRawMetrics(): List<TraceMetricRawEntity> {
+        return dao.getAllRawMetrics()
     }
 
     companion object {

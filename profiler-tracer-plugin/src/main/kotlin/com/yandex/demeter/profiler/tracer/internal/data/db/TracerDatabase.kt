@@ -9,7 +9,7 @@ import com.yandex.demeter.annotations.InternalDemeterApi
 @InternalDemeterApi
 @Database(
     entities = [TraceMetricRawEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class TracerDatabase : RoomDatabase() {
