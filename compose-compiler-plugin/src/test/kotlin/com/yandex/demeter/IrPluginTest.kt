@@ -12,6 +12,27 @@ import org.junit.Test
 
 class IrPluginTest {
     @Test
+    fun `IR plugin success with delegated state property`() {
+        val result = compile(
+            sourceFile = SourceFile.kotlin(
+                "main.kt", """
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+
+@Composable
+fun TestScreen() {
+    var needShowPermission by mutableStateOf(false)
+}
+"""
+            )
+        )
+
+        assertEquals(KotlinCompilation.ExitCode.OK, result.exitCode)
+    }
+
+    @Test
     fun `IR plugin success`() {
         val result = compile(
             sourceFile = SourceFile.kotlin(
@@ -44,6 +65,7 @@ fun compile(
         sources = sourceFiles
         compilerPluginRegistrars = listOf(plugin)
         inheritClassPath = true
+        jvmTarget = "17"
     }.compile()
 }
 

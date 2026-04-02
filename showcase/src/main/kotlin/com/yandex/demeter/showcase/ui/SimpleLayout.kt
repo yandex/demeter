@@ -8,9 +8,11 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
@@ -32,6 +34,7 @@ fun TestLayout(input: Int) {
 fun SimpleLayout() {
     val test = remember { mutableIntStateOf(1) }
     val counter = remember { mutableIntStateOf(2) }
+    var delegatedFlag by remember { mutableStateOf(false) }
 
     val color = remember { Animatable(Color.Gray) }
     LaunchedEffect(counter.intValue) {
@@ -57,6 +60,10 @@ fun SimpleLayout() {
             Column {
                 Text("Count: ${counter.intValue}")
             }
+        }
+
+        Button(onClick = { delegatedFlag = !delegatedFlag }) {
+            Text("Delegated: $delegatedFlag")
         }
     }
 }

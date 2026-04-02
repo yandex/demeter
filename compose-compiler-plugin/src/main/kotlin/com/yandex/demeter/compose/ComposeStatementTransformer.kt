@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.builders.IrBlockBodyBuilder
 import org.jetbrains.kotlin.ir.builders.IrBuilderWithScope
+import org.jetbrains.kotlin.ir.builders.declarations.buildVariable
 import org.jetbrains.kotlin.ir.builders.irBlock
 import org.jetbrains.kotlin.ir.builders.irCall
 import org.jetbrains.kotlin.ir.builders.irGet
@@ -23,6 +24,7 @@ import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classFqName
 import org.jetbrains.kotlin.ir.util.fqNameWhenAvailable
 import org.jetbrains.kotlin.ir.util.superTypes
+import org.jetbrains.kotlin.name.Name
 
 class ComposeStatementTransformer(
     private val logger: DemeterLogger,
@@ -56,7 +58,9 @@ class ComposeStatementTransformer(
             depth
         )
 
-        if (declaration.type.isStateVariable() && declaration.symbol.owner.origin != IrDeclarationOrigin.IR_TEMPORARY_VARIABLE) {
+        if (declaration.type.isStateVariable()
+            && declaration.symbol.owner.origin != IrDeclarationOrigin.IR_TEMPORARY_VARIABLE
+        ) {
             logger.d("add variable: ${declaration.name.asString()} is ${
                 declaration.type.superTypes().map { it.classFqName?.asString() }
             }, ${declaration.symbol.owner.origin}",
@@ -107,10 +111,38 @@ class ComposeStatementTransformer(
 
                     logger.d("[variable] list to add: $currentStateVariables")
 
-                    currentStateVariables.forEach {
-                        irBlockBodyBuilder.irTrack(it)?.let { call ->
+                    currentStateVariables.forEach { stateVar ->
+                        // For PROPERTY_DELEGATE variables (e.g. `var x by remember { mutableStateOf(...) }`),
+                        // we can't call irGet() on the delegate directly — its symbol gets remapped by
+                        // LocalDelegatedPropertiesLowering and the reference becomes dangling.
+                        // Instead, we create a temporary variable that captures the delegate's value:
+                        //
+                        //   VAR PROPERTY_DELEGATE x$delegate = remember { mutableStateOf(false) }
+                        //   VAR IR_TEMPORARY x$delegate$demeterTrack = GET_VAR x$delegate  // <- safe copy
+                        //   CALL registerTracking(GET_VAR x$delegate$demeterTrack, ...)
+                        //
+                        // The lowering updates the irGet in the temp var's initializer,
+                        // while irGet(tempVar) in the tracking call is unaffected.
+                        val (trackVar, displayName) = if (stateVar.origin == IrDeclarationOrigin.PROPERTY_DELEGATE) {
+                            val tempVar = buildVariable(
+                                irBlockBodyBuilder.scope.getLocalDeclarationParent(),
+                                stateVar.startOffset,
+                                stateVar.endOffset,
+                                IrDeclarationOrigin.IR_TEMPORARY_VARIABLE,
+                                Name.identifier("${stateVar.name.asString()}\$demeterTrack"),
+                                stateVar.type
+                            ).apply {
+                                initializer = irBlockBodyBuilder.irGet(stateVar)
+                            }
+                            newStatements.add(tempVar)
+                            tempVar to stateVar.name.asString().removeSuffix("\$delegate")
+                        } else {
+                            stateVar to stateVar.name.asString()
+                        }
+
+                        irBlockBodyBuilder.irTrack(trackVar, displayName)?.let { call ->
                             logger.d(
-                                "[variable] add new statement: ${it.type}",
+                                "[variable] add new statement: ${stateVar.type}",
                                 depth
                             )
 
@@ -203,17 +235,18 @@ class ComposeStatementTransformer(
     }
 
     private fun IrBuilderWithScope.irTrack(
-        stateVariable: IrVariable
+        stateVariable: IrVariable,
+        displayName: String = stateVariable.name.asString()
     ): IrExpression? {
         val composer = function.getComposer() ?: return null
 
-        logger.i("Registered tracker for ${stateVariable.name.asString()} in ${function.name.asString()} (${currentFileName.orEmpty()})")
+        logger.i("Registered tracker for $displayName in ${function.name.asString()} (${currentFileName.orEmpty()})")
 
         return irCall(registerTrackerFunction).also { call ->
             call.arguments[0] = irGet(stateVariable)
             call.arguments[1] = irGet(composer)
             call.arguments[2] = irString(function.name.asString())
-            call.arguments[3] = irString(stateVariable.name.asString())
+            call.arguments[3] = irString(displayName)
             call.arguments[4] = irString(currentFileName.orEmpty())
         }
     }

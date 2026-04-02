@@ -2,7 +2,7 @@
 androidGradlePlugin = '8.13.1'
 buildToolsCommonVersion = '31.13.1'
 
-kctfork-core = "0.5.1"
+kctfork-core = "0.11.0"
 flipper = "0.245.0"
 
 fastScroll = "1.4.0"
