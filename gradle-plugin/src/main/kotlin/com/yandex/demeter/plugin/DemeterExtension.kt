@@ -3,6 +3,8 @@ package com.yandex.demeter.plugin
 import com.android.build.api.dsl.ApplicationBuildType
 import com.yandex.demeter.compose.plugin.DemeterComposeBuildTypeDslExtension
 import com.yandex.demeter.compose.plugin.DemeterComposeProjectDslExtension
+import com.yandex.demeter.coroutine.tracer.plugin.DemeterCoroutineTracerBuildTypeDslExtension
+import com.yandex.demeter.coroutine.tracer.plugin.DemeterCoroutineTracerProjectDslExtension
 import com.yandex.demeter.inject.plugin.DemeterInjectBuildTypeDslExtension
 import com.yandex.demeter.inject.plugin.DemeterInjectProjectDslExtension
 import com.yandex.demeter.tracer.plugin.DemeterTracerBuildTypeDslExtension
@@ -43,6 +45,18 @@ interface DemeterExtension {
 
     fun ApplicationBuildType.compose(configure: DemeterComposeBuildTypeDslExtension.() -> Unit = {}) {
         extensions.getByType(DemeterComposeBuildTypeDslExtension::class.java).apply {
+            enabled = true
+        }.configure()
+    }
+
+    fun Project.coroutineTracer(configure: DemeterCoroutineTracerProjectDslExtension.() -> Unit = {}) {
+        extensions.getByType(DemeterCoroutineTracerProjectDslExtension::class.java).apply {
+            enabled = true
+        }.configure()
+    }
+
+    fun ApplicationBuildType.coroutineTracer(configure: DemeterCoroutineTracerBuildTypeDslExtension.() -> Unit = {}) {
+        extensions.getByType(DemeterCoroutineTracerBuildTypeDslExtension::class.java).apply {
             enabled = true
         }.configure()
     }

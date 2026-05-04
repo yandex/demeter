@@ -12,6 +12,7 @@ Demeter is a performance measurement library that can simplify performance issue
 - **Tracer**: Measures project methods with information about execution thread, execution time, and sorts by hazard level
 - **Inject**: Wraps and measures `@Inject` constructor initializations and their dependencies. Useful for identifying problems with Dagger graphs
 - **Compose**: Observes `StateObject` changes and recompositions
+- **Coroutine Tracer**: Tracks coroutine job lifecycle (launch/async) with automatic bytecode instrumentation. Displays coroutine hierarchies as an interactive tree view
 - Enriches methods with profileable sections that help investigate problems in Android Profiler or Profiler
 - Exports measurements to CSV, Flamegraph, Firefox profiler and Flipper
 
@@ -47,6 +48,8 @@ Demeter consists of the following libraries:
 | `demeter-profiler` | Main profiler implementation for dev/debug build types. **Do not attach to release builds!** |
 | `demeter-profiler-base` | Base profiler logic |
 | `demeter-profiler-ui` | Profiler UI components |
+| `demeter-profiler-coroutine-tracer-plugin` | Coroutine lifecycle tracing runtime |
+| `demeter-profiler-coroutine-tracer-ui-plugin` | Coroutine tracer Compose tree-view UI |
 | `demeter-gradle-plugin` | Main Demeter Gradle Plugin |
 
 ### Profiler Plugins
@@ -58,6 +61,7 @@ Functionality is provided via profiler plugins:
 | `demeter-profiler-tracer-plugin` | Method tracing |
 | `demeter-profiler-inject-plugin` | `@Inject` constructor analysis |
 | `demeter-profiler-compose-plugin` | Jetpack Compose analyzer |
+| `demeter-profiler-coroutine-tracer-plugin` | Coroutine lifecycle tracing |
 
 **Note**: When using published Maven artifacts (not building from source), you need to explicitly add plugin dependencies in addition to the main profiler dependency.
 
@@ -81,6 +85,7 @@ dependencies {
     debugImplementation("com.yandex.demeter:profiler-tracer-ui-plugin:VERSION")
     debugImplementation("com.yandex.demeter:profiler-inject-ui-plugin:VERSION")
     debugImplementation("com.yandex.demeter:profiler-compose-ui-plugin:VERSION")
+    debugImplementation("com.yandex.demeter:profiler-coroutine-tracer-ui-plugin:VERSION")
 }
 ```
 
@@ -104,6 +109,7 @@ override fun onCreate() {
                 TracerUiDemeterPlugin(context = this),
                 InjectUiDemeterPlugin(),
                 ComposeUiDemeterPlugin(),
+                CoroutineTracerUiDemeterPlugin(context = this),
             ),
         )
     )
@@ -120,6 +126,9 @@ demeter {
         includedClasses = listOf("com.yandex.myapp")
     }
     compose()
+    coroutineTracer {
+        includedClasses = listOf("com.yandex.myapp")
+    }
 }
 ```
 
@@ -147,6 +156,7 @@ dependencies {
     debugImplementation("com.yandex.demeter:profiler-tracer-plugin:VERSION")
     debugImplementation("com.yandex.demeter:profiler-inject-plugin:VERSION")
     debugImplementation("com.yandex.demeter:profiler-compose-plugin:VERSION")
+    debugImplementation("com.yandex.demeter:profiler-coroutine-tracer-plugin:VERSION")
 }
 ```
 
@@ -169,6 +179,7 @@ override fun onCreate() {
                 TracerDemeterPlugin(context = this),
                 InjectDemeterPlugin(),
                 ComposeDemeterPlugin(),
+                CoroutineTracerDemeterPlugin(),
             ),
         )
     )
@@ -185,6 +196,9 @@ demeter {
         includedClasses = listOf("com.yandex.myapp")
     }
     compose()
+    coroutineTracer {
+        includedClasses = listOf("com.yandex.myapp")
+    }
 }
 ```
 
@@ -250,6 +264,13 @@ demeter {
         enabled = true  // default: false
         debug = false   // default: false - enables compiler plugin debug output
     }
+
+    coroutineTracer {
+        enabled = true                                    // default: false
+        debug = false                                     // default: false - enables ASM debug output
+        includedClasses = listOf("com.yandex.myapp")      // required: packages to analyze
+        excludedClasses = listOf("com.yandex.myapp.test") // optional: packages to exclude
+    }
 }
 ```
 
@@ -304,6 +325,17 @@ android {
 | `enabled` | `Boolean` | `false` | Enable/disable Compose inspection |
 | `debug` | `Boolean` | `false` | Enable compiler plugin debug output |
 
+### Coroutine Tracer Plugin Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `enabled` | `Boolean` | `false` | Enable/disable coroutine tracing |
+| `debug` | `Boolean` | `false` | Enable ASM debug output |
+| `includedClasses` | `List<String>` | `[]` | Class name prefixes to trace (**required**) |
+| `excludedClasses` | `List<String>` | `[]` | Class name prefixes to exclude |
+
+**Limitations:** instruments only `kotlinx.coroutines.BuildersKt.{launch, async}` (and their `*$default` variants). `runBlocking`, `withContext`, `produce`, `actor`, `flow { ... }.launchIn`, and custom `CoroutineScope` extensions are not currently traced.
+
 ### Runtime Plugin Classes
 
 | Plugin Class | Parameters | Description |
@@ -314,6 +346,8 @@ android {
 | `TracerUiDemeterPlugin` | `context: Context`, `reporter: DemeterReporter?` | Tracer with UI |
 | `InjectUiDemeterPlugin` | `reporter: DemeterReporter?` | Inject with UI |
 | `ComposeUiDemeterPlugin` | none | Compose with UI |
+| `CoroutineTracerDemeterPlugin` | `context: Context`, `reporter: DemeterReporter?` | Plain coroutine tracer |
+| `CoroutineTracerUiDemeterPlugin` | `context: Context`, `reporter: DemeterReporter?` | Coroutine tracer with tree-view UI |
 
 ## Gradle Plugins
 
@@ -343,6 +377,66 @@ plugins {
 | `com.yandex.demeter.tracer` | `tracer-gradle-plugin` | Method tracing instrumentation |
 | `com.yandex.demeter.inject` | `inject-gradle-plugin` | `@Inject` constructor instrumentation |
 | `com.yandex.demeter.compose` | `compose-gradle-plugin` | Jetpack Compose compiler plugin |
+| `com.yandex.demeter.coroutine.tracer` | `coroutine-tracer-gradle-plugin` | Coroutine builder instrumentation |
+
+## Coroutine Tracer
+
+The Coroutine Tracer plugin automatically instruments `launch` and `async` calls at build time via ASM bytecode transformation. At runtime it tracks the full lifecycle of every coroutine Job:
+
+- **Parent-child hierarchy** — automatically detected via `Job` parent references
+- **Duration** — wall-clock time from launch to completion
+- **Thread info** — launch thread, completion thread, and dispatcher name
+- **Cancellation & exceptions** — tracked and displayed as badges
+- **Interactive tree view** — expand/collapse nodes, sort by time/duration/name, filter by thread
+
+### How it works
+
+1. **Build time**: The Gradle plugin scans classes matching `includedClasses` and finds `launch`/`async` calls. It inserts a `DUP` + `LDC "ClassName#method:line"` + `INVOKESTATIC CoroutineTracerAsm.onCoroutineLaunched` sequence after each builder call.
+
+2. **Runtime**: `CoroutineTracerAsm.onCoroutineLaunched(job, launchSite)` registers a completion listener on the Job. When the Job completes, a metric is emitted containing duration, thread names, cancellation status, exception info, and parent trace ID.
+
+3. **UI**: Metrics are collected into a tree structure and displayed as an interactive Compose tree view with color-coded warning levels (green → yellow → red based on duration).
+
+### Coroutine Tracer setup
+
+**Step 1.** Enable the plugin in your `build.gradle.kts`:
+```kotlin
+plugins {
+    id("com.yandex.demeter")
+}
+
+demeter {
+    coroutineTracer {
+        includedClasses = listOf("com.your.package")
+    }
+}
+```
+
+**Step 2.** Add the runtime dependency:
+```kotlin
+dependencies {
+    // With UI (tree-view visualization):
+    debugImplementation("com.yandex.demeter:profiler-coroutine-tracer-ui-plugin:VERSION")
+
+    // Or without UI (programmatic access only):
+    debugImplementation("com.yandex.demeter:profiler-coroutine-tracer-plugin:VERSION")
+}
+```
+
+**Step 3.** Initialize in your Application:
+```kotlin
+Demeter.init(
+    UiDemeterInitializer(
+        context = this,
+        uiPlugins = listOf(
+            CoroutineTracerUiDemeterPlugin(),
+            // ... other plugins
+        ),
+    )
+)
+```
+
+The COROUTINE TRACER tab will appear in the Demeter UI showing all tracked coroutine trees.
 
 ## Flipper Integration
 

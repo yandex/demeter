@@ -5,6 +5,7 @@ import android.util.Log
 import com.yandex.demeter.Demeter
 import com.yandex.demeter.UiDemeterInitializer
 import com.yandex.demeter.profiler.compose.ui.ComposeUiDemeterPlugin
+import com.yandex.demeter.profiler.coroutine.tracer.ui.CoroutineTracerUiDemeterPlugin
 import com.yandex.demeter.profiler.inject.ui.InjectUiDemeterPlugin
 import com.yandex.demeter.profiler.tracer.ui.TracerUiDemeterPlugin
 import com.yandex.demeter.showcase.di.component.AppComponent
@@ -27,6 +28,10 @@ class DemeterShowCaseApp : Application() {
                         reporter = { payload -> Log.i(TAG, "[Inject payload] $payload") }
                     ),
                     ComposeUiDemeterPlugin(),
+                    CoroutineTracerUiDemeterPlugin(
+                        context = this,
+                        reporter = { payload -> Log.i(TAG, "[Coroutine Tracer payload] $payload") }
+                    ),
                 ),
             )
         )

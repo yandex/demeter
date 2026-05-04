@@ -1,6 +1,7 @@
 package com.yandex.demeter.plugin
 
 import com.yandex.demeter.compose.plugin.DemeterComposePlugin
+import com.yandex.demeter.coroutine.tracer.plugin.DemeterCoroutineTracerPlugin
 import com.yandex.demeter.inject.plugin.DemeterInjectPlugin
 import com.yandex.demeter.tracer.plugin.DemeterTracerPlugin
 import org.gradle.api.Plugin
@@ -15,6 +16,7 @@ open class DemeterPlugin : Plugin<Project> {
         target.plugins.apply(DemeterTracerPlugin::class.java)
         target.plugins.apply(DemeterInjectPlugin::class.java)
         target.plugins.apply(DemeterComposePlugin::class.java)
+        target.plugins.apply(DemeterCoroutineTracerPlugin::class.java)
 
         target.afterEvaluate {
             target.validateDependencies()

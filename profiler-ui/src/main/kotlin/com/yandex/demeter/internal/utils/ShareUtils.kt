@@ -209,104 +209,7 @@ fun shareTrace(context: Context, metrics: Collection<RawTraceMetric>, logName: S
     directory.mkdirs()
 
     sharedFile.bufferedWriter().use { writer ->
-        val pid = android.os.Process.myPid()
-        val sortedMetrics = metrics.sortedBy { it.startTimeMs }
-        val baseTimeMs = sortedMetrics.minOfOrNull { it.startTimeMs } ?: 0L
-
-        val stringArray = mutableListOf<String>()
-        val stringToIndex = mutableMapOf<String, Int>()
-
-        fun String.intern(): Int = stringToIndex.getOrPut(this) {
-            stringArray.add(this)
-            stringArray.lastIndex
-        }
-
-        fun filledArray(size: Int, value: String) = (0 until size).joinToString(",", "[", "]") { value }
-
-        val threadsJson = sortedMetrics.groupBy { it.threadName }.entries.joinToString(",") { (threadName, threadMetrics) ->
-            val tid = threadName.hashCode().and(0x7FFFFFFF)
-
-            val funcNames = mutableListOf<Int>()
-            val frameFunc = mutableListOf<Int>()
-            val stackFrame = mutableListOf<Int>()
-            val stackPrefix = mutableListOf<Int?>()
-            val sampleStack = mutableListOf<Int>()
-            val sampleTime = mutableListOf<Double>()
-            val executionIdToStackIndex = mutableMapOf<Long, Int>()
-
-            threadMetrics.sortedBy { it.startTimeMs }.forEach { metric ->
-                funcNames += metric.simpleName.intern()
-                frameFunc += funcNames.lastIndex
-                stackFrame += frameFunc.lastIndex
-                stackPrefix += metric.parentExecutionId?.let { executionIdToStackIndex[it] }
-                executionIdToStackIndex[metric.executionId] = stackFrame.lastIndex
-                sampleStack += stackFrame.lastIndex
-                sampleTime += (metric.startTimeMs - baseTimeMs).toDouble()
-            }
-
-            """
-            |{"processType":"default",
-            |"processStartupTime":0,"processShutdownTime":null,
-            |"registerTime":0,"unregisterTime":null,"pausedRanges":[],
-            |"name":"${threadName.escapeJson()}",
-            |"isMainThread":${threadName == "main"},
-            |"pid":$pid,"tid":$tid,
-            |"samples":{
-            |"weightType":"samples","weight":null,
-            |"stack":${sampleStack.joinToString(",", "[", "]")},
-            |"time":${sampleTime.joinToString(",", "[", "]")},
-            |"length":${sampleStack.size}},
-            |"markers":{"data":[],"name":[],"startTime":[],"endTime":[],"phase":[],"category":[],"length":0},
-            |"stackTable":{
-            |"frame":${stackFrame.joinToString(",", "[", "]")},
-            |"prefix":${stackPrefix.joinToString(",", "[", "]") { it?.toString() ?: "null" }},
-            |"length":${stackFrame.size}},
-            |"frameTable":{
-            |"address":${filledArray(frameFunc.size, "-1")},
-            |"inlineDepth":${filledArray(frameFunc.size, "0")},
-            |"category":${filledArray(frameFunc.size, "2")},
-            |"subcategory":${filledArray(frameFunc.size, "0")},
-            |"func":${frameFunc.joinToString(",", "[", "]")},
-            |"nativeSymbol":${filledArray(frameFunc.size, "null")},
-            |"innerWindowID":${filledArray(frameFunc.size, "null")},
-            |"line":${filledArray(frameFunc.size, "null")},
-            |"column":${filledArray(frameFunc.size, "null")},
-            |"length":${frameFunc.size}},
-            |"funcTable":{
-            |"isJS":${filledArray(funcNames.size, "false")},
-            |"relevantForJS":${filledArray(funcNames.size, "false")},
-            |"name":${funcNames.joinToString(",", "[", "]")},
-            |"resource":${filledArray(funcNames.size, "-1")},
-            |"source":${filledArray(funcNames.size, "null")},
-            |"lineNumber":${filledArray(funcNames.size, "null")},
-            |"columnNumber":${filledArray(funcNames.size, "null")},
-            |"length":${funcNames.size}},
-            |"resourceTable":{"lib":[],"name":[],"host":[],"type":[],"length":0},
-            |"nativeSymbols":{"libIndex":[],"address":[],"name":[],"functionSize":[],"length":0}}
-            """.trimMargin().replace("\n", "")
-        }
-
-        val stringArrayJson = stringArray.joinToString(",", "[", "]") { "\"${it.escapeJson()}\"" }
-
-        writer.write("""
-            |{"meta":{
-            |"interval":0,"startTime":0,"processType":0,
-            |"categories":[
-            |{"name":"Other","color":"grey","subcategories":["Other"]},
-            |{"name":"Native","color":"magenta","subcategories":["Other"]},
-            |{"name":"Java","color":"green","subcategories":["Other"]},
-            |{"name":"System","color":"yellow","subcategories":["Other"]},
-            |{"name":"Kernel","color":"orange","subcategories":["Other"]}],
-            |"product":"${logName.escapeJson()}",
-            |"stackwalk":0,"version":30,"preprocessedProfileVersion":58,
-            |"symbolicationNotSupported":true,"markerSchema":[],
-            |"platform":"Android","toolkit":"android","importedFrom":"Demeter",
-            |"usesOnlyOneStackType":true,"sourceCodeIsNotOnSearchfox":true,
-            |"keepProfileThreadOrder":true},
-            |"libs":[],
-            |"shared":{"stringArray":$stringArrayJson,"sources":{"uuid":[],"filename":[],"length":0}},
-            |"threads":[$threadsJson]}
-        """.trimMargin().replace("\n", ""))
+        writer.write(buildFirefoxProfilerJson(metrics, logName, android.os.Process.myPid()))
     }
 
     Intent(Intent.ACTION_SEND).apply {
@@ -314,6 +217,113 @@ fun shareTrace(context: Context, metrics: Collection<RawTraceMetric>, logName: S
         type = "application/json"
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }.let { context.startActivity(Intent.createChooser(it, null)) }
+}
+
+@InternalDemeterApi
+fun buildFirefoxProfilerJson(
+    metrics: Collection<RawTraceMetric>,
+    logName: String,
+    pid: Int = 0,
+): String {
+    val sortedMetrics = metrics.sortedBy { it.startTimeMs }
+    val baseTimeMs = sortedMetrics.minOfOrNull { it.startTimeMs } ?: 0L
+
+    val stringArray = mutableListOf<String>()
+    val stringToIndex = mutableMapOf<String, Int>()
+
+    fun String.intern(): Int = stringToIndex.getOrPut(this) {
+        stringArray.add(this)
+        stringArray.lastIndex
+    }
+
+    fun filledArray(size: Int, value: String) = (0 until size).joinToString(",", "[", "]") { value }
+
+    val threadsJson = sortedMetrics.groupBy { it.threadName }.entries.joinToString(",") { (threadName, threadMetrics) ->
+        val tid = threadName.hashCode().and(0x7FFFFFFF)
+
+        val funcNames = mutableListOf<Int>()
+        val frameFunc = mutableListOf<Int>()
+        val stackFrame = mutableListOf<Int>()
+        val stackPrefix = mutableListOf<Int?>()
+        val sampleStack = mutableListOf<Int>()
+        val sampleTime = mutableListOf<Double>()
+        val sampleWeight = mutableListOf<Double>()
+        val executionIdToStackIndex = mutableMapOf<Long, Int>()
+
+        threadMetrics.sortedBy { it.startTimeMs }.forEach { metric ->
+            funcNames += metric.simpleName.intern()
+            frameFunc += funcNames.lastIndex
+            stackFrame += frameFunc.lastIndex
+            stackPrefix += metric.parentExecutionId?.let { executionIdToStackIndex[it] }
+            executionIdToStackIndex[metric.executionId] = stackFrame.lastIndex
+            sampleStack += stackFrame.lastIndex
+            sampleTime += (metric.startTimeMs - baseTimeMs).toDouble()
+            sampleWeight += metric.durationMs.toDouble()
+        }
+
+        """
+        |{"processType":"default",
+        |"processStartupTime":0,"processShutdownTime":null,
+        |"registerTime":0,"unregisterTime":null,"pausedRanges":[],
+        |"name":"${threadName.escapeJson()}",
+        |"isMainThread":${threadName == "main"},
+        |"pid":$pid,"tid":$tid,
+        |"samples":{
+        |"weightType":"tracing-ms","weight":${sampleWeight.joinToString(",", "[", "]")},
+        |"stack":${sampleStack.joinToString(",", "[", "]")},
+        |"time":${sampleTime.joinToString(",", "[", "]")},
+        |"length":${sampleStack.size}},
+        |"markers":{"data":[],"name":[],"startTime":[],"endTime":[],"phase":[],"category":[],"length":0},
+        |"stackTable":{
+        |"frame":${stackFrame.joinToString(",", "[", "]")},
+        |"prefix":${stackPrefix.joinToString(",", "[", "]") { it?.toString() ?: "null" }},
+        |"length":${stackFrame.size}},
+        |"frameTable":{
+        |"address":${filledArray(frameFunc.size, "-1")},
+        |"inlineDepth":${filledArray(frameFunc.size, "0")},
+        |"category":${filledArray(frameFunc.size, "2")},
+        |"subcategory":${filledArray(frameFunc.size, "0")},
+        |"func":${frameFunc.joinToString(",", "[", "]")},
+        |"nativeSymbol":${filledArray(frameFunc.size, "null")},
+        |"innerWindowID":${filledArray(frameFunc.size, "null")},
+        |"line":${filledArray(frameFunc.size, "null")},
+        |"column":${filledArray(frameFunc.size, "null")},
+        |"length":${frameFunc.size}},
+        |"funcTable":{
+        |"isJS":${filledArray(funcNames.size, "false")},
+        |"relevantForJS":${filledArray(funcNames.size, "false")},
+        |"name":${funcNames.joinToString(",", "[", "]")},
+        |"resource":${filledArray(funcNames.size, "-1")},
+        |"source":${filledArray(funcNames.size, "null")},
+        |"lineNumber":${filledArray(funcNames.size, "null")},
+        |"columnNumber":${filledArray(funcNames.size, "null")},
+        |"length":${funcNames.size}},
+        |"resourceTable":{"lib":[],"name":[],"host":[],"type":[],"length":0},
+        |"nativeSymbols":{"libIndex":[],"address":[],"name":[],"functionSize":[],"length":0}}
+        """.trimMargin().replace("\n", "")
+    }
+
+    val stringArrayJson = stringArray.joinToString(",", "[", "]") { "\"${it.escapeJson()}\"" }
+
+    return """
+        |{"meta":{
+        |"interval":0,"startTime":0,"processType":0,
+        |"categories":[
+        |{"name":"Other","color":"grey","subcategories":["Other"]},
+        |{"name":"Native","color":"magenta","subcategories":["Other"]},
+        |{"name":"Java","color":"green","subcategories":["Other"]},
+        |{"name":"System","color":"yellow","subcategories":["Other"]},
+        |{"name":"Kernel","color":"orange","subcategories":["Other"]}],
+        |"product":"${logName.escapeJson()}",
+        |"stackwalk":0,"version":30,"preprocessedProfileVersion":58,
+        |"symbolicationNotSupported":true,"markerSchema":[],
+        |"platform":"Android","toolkit":"android","importedFrom":"Demeter",
+        |"usesOnlyOneStackType":true,"sourceCodeIsNotOnSearchfox":true,
+        |"keepProfileThreadOrder":true},
+        |"libs":[],
+        |"shared":{"stringArray":$stringArrayJson,"sources":{"uuid":[],"filename":[],"length":0}},
+        |"threads":[$threadsJson]}
+    """.trimMargin().replace("\n", "")
 }
 
 private fun String.escapeJson(): String = buildString {

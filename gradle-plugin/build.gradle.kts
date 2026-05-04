@@ -36,6 +36,7 @@ dependencies {
     api(projects.tracerGradlePlugin)
     api(projects.injectGradlePlugin)
     api(projects.composeGradlePlugin)
+    api(projects.coroutineTracerGradlePlugin)
 
     implementation(libs.tools.gradle)
 }

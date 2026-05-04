@@ -27,7 +27,12 @@ internal class MetricsAdapter : Adapter<ViewHolder>() {
     private val differ = AsyncListDiffer(this, diffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return object : ViewHolder(differ.currentList[viewType].ui(parent.context)) {}
+        val view = differ.currentList[viewType].ui(parent.context)
+        view.layoutParams = ViewGroup.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+        return object : ViewHolder(view) {}
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int): Unit = Unit

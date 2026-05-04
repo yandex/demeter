@@ -22,5 +22,7 @@ include(":inject-gradle-plugin")
 project(":inject-gradle-plugin").projectDir = file("../inject-gradle-plugin")
 include(":compose-gradle-plugin")
 project(":compose-gradle-plugin").projectDir = file("../compose-gradle-plugin")
+include(":coroutine-tracer-gradle-plugin")
+project(":coroutine-tracer-gradle-plugin").projectDir = file("../coroutine-tracer-gradle-plugin")
 
 rootProject.name = "gradle-plugin"

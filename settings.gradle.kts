@@ -24,6 +24,8 @@ include(
     ":profiler-inject-ui-plugin",
     ":profiler-compose-plugin",
     ":profiler-compose-ui-plugin",
+    ":profiler-coroutine-tracer-plugin",
+    ":profiler-coroutine-tracer-ui-plugin",
     ":compose-compiler-plugin",
     ":flipper",
     ":benchmark",

@@ -17,6 +17,7 @@ android {
 
     defaultConfig {
         applicationId = "com.yandex.demeter"
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -34,6 +35,9 @@ android {
                     includedClasses = listOf("com.yandex.demeter")
                 }
                 inject {
+                    includedClasses = listOf("com.yandex.demeter.showcase")
+                }
+                coroutineTracer {
                     includedClasses = listOf("com.yandex.demeter.showcase")
                 }
 
@@ -58,6 +62,7 @@ dependencies {
     implementation(projects.profilerTracerUiPlugin)
     implementation(projects.profilerInjectUiPlugin)
     implementation(projects.profilerComposeUiPlugin)
+    implementation(projects.profilerCoroutineTracerUiPlugin)
 
     ksp(libs.daggerCompiler)
     implementation(libs.dagger)
