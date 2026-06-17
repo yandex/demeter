@@ -206,6 +206,36 @@ demeter {
 
 ---
 
+### Compose feature and library modules
+
+The main app plugin configures only the module where it is applied. Compose feature or library modules are fully manual: apply the Compose Gradle plugin, enable it for the required build type, and add the Compose profiler hook as a compile-only dependency.
+
+```kotlin
+import com.yandex.demeter.compose.plugin.DemeterComposeBuildTypeDslExtension
+
+plugins {
+    id("com.yandex.demeter.compose")
+}
+
+android {
+    buildTypes {
+        getByName("debug") {
+            extensions.configure<DemeterComposeBuildTypeDslExtension>("demeterCompose") {
+                enabled = true
+            }
+        }
+    }
+}
+
+dependencies {
+    debugCompileOnly("com.yandex.demeter:profiler-compose-plugin:VERSION")
+}
+```
+
+The app module still owns runtime dependencies such as `profiler-compose-ui-plugin` or `profiler-compose-plugin`. Feature and library modules use `compileOnly` only so compiler-generated references can resolve during compilation without adding Demeter runtime classes to their APK/runtime classpath.
+
+---
+
 ### Custom Reporter
 
 You can provide a custom reporter to send metrics to your analytics or logging system:
@@ -367,7 +397,7 @@ plugins {
 }
 ```
 
-**Note**: The main plugin only applies sub-plugins that you specify in the `demeter` block.
+**Note**: The main plugin configures the current app module only. Feature and library modules that need Compose instrumentation must apply `com.yandex.demeter.compose` directly and configure `demeterCompose`.
 
 ### Available Gradle Plugins
 

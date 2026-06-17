@@ -242,6 +242,8 @@
   "screenshots/inject.png":"taxi/mobile/demeter/screenshots/inject.png",
   "screenshots/tracer.png":"taxi/mobile/demeter/screenshots/tracer.png",
   "settings.gradle.kts":"taxi/mobile/demeter/settings.gradle.kts",
+  "showcase-feature/build.gradle.kts":"taxi/mobile/demeter/showcase-feature/build.gradle.kts",
+  "showcase-feature/src/main/kotlin/com/yandex/demeter/showcase/feature/FeatureLayout.kt":"taxi/mobile/demeter/showcase-feature/src/main/kotlin/com/yandex/demeter/showcase/feature/FeatureLayout.kt",
   "showcase/build.gradle.kts":"taxi/mobile/demeter/showcase/build.gradle.kts",
   "showcase/proguard-rules.pro":"taxi/mobile/demeter/showcase/proguard-rules.pro",
   "showcase/src/main/AndroidManifest.xml":"taxi/mobile/demeter/showcase/src/main/AndroidManifest.xml",

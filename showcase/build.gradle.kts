@@ -5,13 +5,6 @@ plugins {
     id("com.yandex.demeter")
 }
 
-configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        substitute(module("com.yandex.demeter:compose-compiler-plugin"))
-            .using(project(":compose-compiler-plugin"))
-    }
-}
-
 android {
     namespace = "com.yandex.demeter"
 
@@ -58,6 +51,7 @@ android {
 dependencies {
     implementation(projects.profiler)
     implementation(projects.core)
+    implementation(projects.showcaseFeature)
 
     implementation(projects.profilerTracerUiPlugin)
     implementation(projects.profilerInjectUiPlugin)

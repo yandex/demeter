@@ -27,6 +27,7 @@ include(
     ":profiler-coroutine-tracer-plugin",
     ":profiler-coroutine-tracer-ui-plugin",
     ":compose-compiler-plugin",
+    ":showcase-feature",
     ":flipper",
     ":benchmark",
 )

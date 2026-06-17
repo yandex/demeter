@@ -14,6 +14,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import com.yandex.demeter.showcase.di.component.DaggerShowCaseActivityComponent
+import com.yandex.demeter.showcase.feature.FeatureLayout
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
@@ -44,6 +45,7 @@ class DemeterShowCaseActivity : ComponentActivity() {
         setContent {
             MaterialTheme {
                 Column(modifier = Modifier.systemBarsPadding()) {
+                    FeatureLayout()
                     ShowCaseLayout(showCaseViewFactory = showCaseViewFactory)
                 }
             }

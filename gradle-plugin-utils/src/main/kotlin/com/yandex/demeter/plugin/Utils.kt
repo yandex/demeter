@@ -1,9 +1,12 @@
 package com.yandex.demeter.plugin
 
 import com.android.build.api.dsl.ApplicationExtension
+import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.instrumentation.ClassData
+import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.ApplicationAndroidComponentsExtension
 import com.android.build.gradle.AppPlugin
+import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 
@@ -13,14 +16,29 @@ inline val ClassData.isKtIntrinsics: Boolean
 val Project.android
     get() = extensions.getByType(ApplicationExtension::class.java)
 
+val Project.androidCommon: CommonExtension<*, *, *, *, *, *>
+    get() = extensions.getByType(CommonExtension::class.java)
+
 fun Project.androidComponents(block: ApplicationAndroidComponentsExtension.() -> Unit) {
     extensions.getByType(ApplicationAndroidComponentsExtension::class.java).block()
+}
+
+fun Project.androidComponentsCommon(block: AndroidComponentsExtension<*, *, *>.() -> Unit) {
+    extensions.getByType(AndroidComponentsExtension::class.java).block()
 }
 
 fun Project.requireAndroidApp() {
     if (!plugins.hasPlugin(AppPlugin::class.java)) {
         throw GradleException("Demeter plugin must be applied only to 'com.android.application' modules. " +
             "Current module '${project.name}' does not have the Android Application plugin applied.")
+    }
+}
+
+fun Project.requireAndroidModule(pluginName: String = "Demeter") {
+    if (!plugins.hasPlugin(AppPlugin::class.java) && !plugins.hasPlugin(LibraryPlugin::class.java)) {
+        throw GradleException("$pluginName plugin must be applied to an Android module " +
+            "('com.android.application' or 'com.android.library'). " +
+            "Current module '${project.name}' does not have any Android plugin applied.")
     }
 }
 

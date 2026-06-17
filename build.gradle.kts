@@ -10,6 +10,13 @@ plugins {
 allprojects {
     apply(plugin = "io.gitlab.arturbosch.detekt")
 
+    configurations.configureEach {
+        resolutionStrategy.dependencySubstitution {
+            substitute(module("com.yandex.demeter:compose-compiler-plugin"))
+                .using(project(":compose-compiler-plugin"))
+        }
+    }
+
     detekt {
         toolVersion = rootProject.libs.versions.detekt.get()
         autoCorrect = true

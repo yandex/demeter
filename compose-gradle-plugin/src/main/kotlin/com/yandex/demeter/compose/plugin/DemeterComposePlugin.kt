@@ -2,9 +2,9 @@ package com.yandex.demeter.compose.plugin
 
 import com.android.build.api.variant.DslExtension
 import com.yandex.demeter.compose.plugin.DemeterComposeExtension.Companion.NAME
-import com.yandex.demeter.plugin.android
-import com.yandex.demeter.plugin.androidComponents
-import com.yandex.demeter.plugin.requireAndroidApp
+import com.yandex.demeter.plugin.androidCommon
+import com.yandex.demeter.plugin.androidComponentsCommon
+import com.yandex.demeter.plugin.requireAndroidModule
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
@@ -14,11 +14,13 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 class DemeterComposePlugin : KotlinCompilerPluginSupportPlugin {
+
     override fun apply(target: Project) {
-        target.requireAndroidApp()
+        target.requireAndroidModule("Demeter Compose")
+
         target.extensions.create(NAME, DemeterComposeProjectDslExtension::class.java)
 
-        target.androidComponents {
+        target.androidComponentsCommon {
             registerExtension(
                 DslExtension.Builder(NAME)
                     .extendBuildTypeWith(DemeterComposeBuildTypeDslExtension::class.java)
@@ -51,14 +53,15 @@ class DemeterComposePlugin : KotlinCompilerPluginSupportPlugin {
         kotlinCompilation: KotlinCompilation<*>,
     ): Provider<List<SubpluginOption>> {
         return kotlinCompilation.target.project.provider {
-            val extension =
-                kotlinCompilation.project.android.buildTypes.findByName(kotlinCompilation.compilationName)
-                    ?.extensions?.findByType(DemeterComposeBuildTypeDslExtension::class.java)
-                    ?: kotlinCompilation.project.extensions.findByType(
-                        DemeterComposeProjectDslExtension::class.java
-                    )
+            val buildTypeEnabled = kotlinCompilation.project.androidCommon.buildTypes
+                .findByName(kotlinCompilation.compilationName)
+                ?.extensions?.findByType(DemeterComposeBuildTypeDslExtension::class.java)
+                ?.enabled
+            val projectEnabled = kotlinCompilation.project.extensions
+                .findByType(DemeterComposeProjectDslExtension::class.java)
+                ?.enabled
 
-            val enabled = extension?.enabled ?: false
+            val enabled = buildTypeEnabled ?: projectEnabled ?: false
 
             listOf(
                 SubpluginOption(
