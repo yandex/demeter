@@ -2,7 +2,7 @@
 androidGradlePlugin = '8.13.1'
 buildToolsCommonVersion = '31.13.1'
 
-kctfork-core = "0.11.0"
+kctfork-core = "0.13.0"
 flipper = "0.245.0"
 
 fastScroll = "1.4.0"
@@ -13,8 +13,8 @@ junit = "4.13.2"
 
 kotlinSerialization = "1.9.0"
 kotlinCoroutines = "1.10.2"
-kotlin = "2.2.20"
-ksp = "2.2.20-2.0.2"
+kotlin = "2.4.10"
+ksp = "2.3.10"
 
 androidXMaterial = "1.13.0"
 androidXEspresso = "3.5.1"

@@ -194,6 +194,7 @@
   "profiler-tracer-ui-plugin/src/main/res/layout/tracer_demeter_plugin_view.xml":"taxi/mobile/demeter/profiler-tracer-ui-plugin/src/main/res/layout/tracer_demeter_plugin_view.xml",
   "profiler-ui/build.gradle.kts":"taxi/mobile/demeter/profiler-ui/build.gradle.kts",
   "profiler-ui/src/main/AndroidManifest.xml":"taxi/mobile/demeter/profiler-ui/src/main/AndroidManifest.xml",
+  "profiler-ui/src/main/kotlin/com/yandex/demeter/NotificationPermission.kt":"taxi/mobile/demeter/profiler-ui/src/main/kotlin/com/yandex/demeter/NotificationPermission.kt",
   "profiler-ui/src/main/kotlin/com/yandex/demeter/UiDemeterInitializer.kt":"taxi/mobile/demeter/profiler-ui/src/main/kotlin/com/yandex/demeter/UiDemeterInitializer.kt",
   "profiler-ui/src/main/kotlin/com/yandex/demeter/api/UiDemeterPlugin.kt":"taxi/mobile/demeter/profiler-ui/src/main/kotlin/com/yandex/demeter/api/UiDemeterPlugin.kt",
   "profiler-ui/src/main/kotlin/com/yandex/demeter/internal/DemeterFileProvider.kt":"taxi/mobile/demeter/profiler-ui/src/main/kotlin/com/yandex/demeter/internal/DemeterFileProvider.kt",

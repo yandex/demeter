@@ -14,27 +14,30 @@ import com.yandex.demeter.showcase.di.component.DaggerAppComponent
 private const val TAG = "ShowCaseApp"
 
 class DemeterShowCaseApp : Application() {
+    internal val demeterInitializer by lazy {
+        UiDemeterInitializer(
+            context = this,
+            uiPlugins = listOf(
+                TracerUiDemeterPlugin(
+                    context = this,
+                    reporter = { payload -> Log.i(TAG, "[Tracer payload] $payload") }
+                ),
+                InjectUiDemeterPlugin(
+                    reporter = { payload -> Log.i(TAG, "[Inject payload] $payload") }
+                ),
+                ComposeUiDemeterPlugin(),
+                CoroutineTracerUiDemeterPlugin(
+                    context = this,
+                    reporter = { payload -> Log.i(TAG, "[Coroutine Tracer payload] $payload") }
+                ),
+            ),
+            showNotificationOnInit = false,
+        )
+    }
+
     override fun onCreate() {
         super.onCreate()
-        Demeter.init(
-            initializer = UiDemeterInitializer(
-                context = this,
-                uiPlugins = listOf(
-                    TracerUiDemeterPlugin(
-                        context = this,
-                        reporter = { payload -> Log.i(TAG, "[Tracer payload] $payload") }
-                    ),
-                    InjectUiDemeterPlugin(
-                        reporter = { payload -> Log.i(TAG, "[Inject payload] $payload") }
-                    ),
-                    ComposeUiDemeterPlugin(),
-                    CoroutineTracerUiDemeterPlugin(
-                        context = this,
-                        reporter = { payload -> Log.i(TAG, "[Coroutine Tracer payload] $payload") }
-                    ),
-                ),
-            )
-        )
+        Demeter.init(initializer = demeterInitializer)
 
         appComponent = DaggerAppComponent
             .factory()

@@ -13,6 +13,8 @@ import org.jetbrains.kotlin.config.CompilerConfiguration
 
 class DemeterComposeCompilerRegistrar : CompilerPluginRegistrar() {
 
+    override val pluginId: String = "demeter-compose-compiler-plugin"
+
     override val supportsK2 = true
 
     override fun ExtensionStorage.registerExtensions(configuration: CompilerConfiguration) {
