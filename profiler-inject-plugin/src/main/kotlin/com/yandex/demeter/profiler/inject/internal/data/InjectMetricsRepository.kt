@@ -1,73 +1,70 @@
 package com.yandex.demeter.profiler.inject.internal.data
 
 import com.yandex.demeter.annotations.InternalDemeterApi
-import com.yandex.demeter.internal.utils.constructorProperties
 import com.yandex.demeter.profiler.inject.internal.data.model.AsmInjectMetric
 import com.yandex.demeter.profiler.inject.internal.data.model.InjectMetric
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.reflect.KClass
-import kotlin.reflect.jvm.jvmName
 
-/**
- * Contains inject metrics.
- */
+/** Contains inject metrics identified by their pre-obfuscation names, without loading application classes. */
 @InternalDemeterApi
 object InjectMetricsRepository {
 
-    private val initCounter = ConcurrentHashMap<String, Int>()
+    private val initCounter = mutableMapOf<String, Int>()
+    private val metrics = linkedMapOf<String, InjectMetric>()
+    private val parameterTypesCache = ConcurrentHashMap<String, List<String>>()
 
-    private val _initializedMetrics = ConcurrentHashMap<String, InjectMetric>()
+    // A null entry means that several unmatched instances exist: a declared type cannot identify one of them.
+    private val dependencyCandidates = mutableMapOf<String, String?>()
+
     val initializedMetrics: Map<String, InjectMetric>
-        get() = _initializedMetrics.toMap()
+        @Synchronized get() = metrics.toMap()
 
     fun putMetric(metric: AsmInjectMetric) {
-        val handledBefore = _initializedMetrics.containsKey(metric.initializedClass.name)
-        if (handledBefore) putExistingMetric(metric) else putNewMetric(metric)
+        val parameterTypes = uniqueParameterTypes(metric.parameterClassNames)
+        synchronized(this) {
+            val instanceNo = (initCounter[metric.className] ?: -1) + 1
+            initCounter[metric.className] = instanceNo
+            val key = if (instanceNo == 0) metric.className else "${metric.className} №$instanceNo"
+            val args = takeDependencies(parameterTypes)
+
+            metrics[key] = InjectMetric(
+                className = metric.className,
+                initTime = metric.durationMs,
+                instanceNo = instanceNo,
+                args = args,
+                threadName = metric.threadName,
+            )
+            dependencyCandidates[metric.className] = if (metric.className in dependencyCandidates) null else key
+        }
         InjectMetricsReportersNotifier.report(metric)
     }
 
-    private fun putNewMetric(metric: AsmInjectMetric) {
-        val simpleName = metric.initializedClass.name
+    private fun uniqueParameterTypes(parameterClassNames: String): List<String> {
+        if (parameterClassNames.isEmpty()) return emptyList()
+        return parameterTypesCache.getOrPut(parameterClassNames) {
+            parameterClassNames.split(';').groupingBy { it }.eachCount()
+                .filterValues { it == 1 }.keys.toList()
+        }
+    }
 
-        val initializedArgsMetrics = mutableListOf<InjectMetric>()
-        val originClass = Class.forName(metric.className).kotlin
-        val args = originClass.constructorProperties.map { it.returnType }
-
-        for (arg in args) {
-            val argClassSimpleName = (arg.classifier as? KClass<*>)?.jvmName
-            val argMetrics = _initializedMetrics[argClassSimpleName]
-            if (argMetrics != null) {
-                initializedArgsMetrics.add(argMetrics)
-                _initializedMetrics.remove(argClassSimpleName)
+    private fun takeDependencies(parameterTypes: List<String>): List<InjectMetric> {
+        return parameterTypes.mapNotNull { className ->
+            // Do not guess implementations, unwrap Provider/Lazy, or reuse one metric for two parameters.
+            val key = dependencyCandidates[className]
+            if (key != null) {
+                dependencyCandidates.remove(className)
+                metrics.remove(key)
+            } else {
+                null
             }
         }
-
-        initCounter[simpleName] = 0
-
-        _initializedMetrics[simpleName] = InjectMetric(
-            cls = metric.initializedClass,
-            initTime = metric.durationMs,
-            args = initializedArgsMetrics,
-            threadName = metric.threadName
-        )
     }
 
-    private fun putExistingMetric(metric: AsmInjectMetric) {
-        val simpleName = metric.initializedClass.name
-
-        val counterVal = initCounter.getOrElse(simpleName) { 1 } + 1
-        initCounter[simpleName] = counterVal
-
-        _initializedMetrics["$simpleName №$counterVal"] = InjectMetric(
-            cls = metric.initializedClass,
-            initTime = metric.durationMs,
-            instanceNo = counterVal,
-            threadName = metric.threadName
-        )
-    }
-
+    @Synchronized
     fun clear() {
-        _initializedMetrics.clear()
         initCounter.clear()
+        metrics.clear()
+        dependencyCandidates.clear()
+        parameterTypesCache.clear()
     }
 }

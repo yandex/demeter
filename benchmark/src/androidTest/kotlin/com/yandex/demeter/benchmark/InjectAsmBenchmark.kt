@@ -22,14 +22,13 @@ class InjectAsmBenchmark {
     val benchmarkRule = BenchmarkRule()
 
     private lateinit var className: String
-    private lateinit var clazz: Class<*>
+    private val parameterClassNames = "java.lang.String;long"
 
     private lateinit var random: Random
 
     @Before
     fun setup() {
         className = this::class.qualifiedName.orEmpty()
-        clazz = this::class.java
         random = Random(12_04_2019)
     }
 
@@ -43,7 +42,7 @@ class InjectAsmBenchmark {
             StubInjectAsm.log(
                 startTimeNs = startTime,
                 className = className,
-                initializedClass = clazz,
+                parameterClassNames = parameterClassNames,
             )
         }
     }
@@ -54,12 +53,12 @@ class InjectAsmBenchmark {
         fun log(
             startTimeNs: Long,
             className: String,
-            initializedClass: Class<*>,
+            parameterClassNames: String,
         ) {
             logInternal(
                 startTimeNs = startTimeNs,
                 className = className,
-                initializedClass = initializedClass,
+                parameterClassNames = parameterClassNames,
             )
         }
     }

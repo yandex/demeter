@@ -7,8 +7,8 @@ private const val NANOSECONDS_IN_MILLISECOND = 1_000_000L
 
 @InternalDemeterApi
 class AsmInjectMetric(
-    val initializedClass: Class<*>,
     val className: String,
+    val parameterClassNames: String,
     val startTimeNs: Long,
     val finishTimeNs: Long,
     override val threadName: String,

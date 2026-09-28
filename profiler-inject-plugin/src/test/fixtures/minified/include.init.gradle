@@ -1,0 +1,7 @@
+// Run from the Demeter project root; only the opt-in smoke build includes this app.
+settingsEvaluated { settings ->
+    if (settings.rootDir.name == 'demeter') {
+        settings.include ':injectValidation'
+        settings.project(':injectValidation').projectDir = new File(settings.rootDir, 'profiler-inject-plugin/src/test/fixtures/minified')
+    }
+}

@@ -35,6 +35,7 @@ class InjectClassVisitor(
         name,
         descriptor,
     ) {
+        private val parameterClassNames = Type.getArgumentTypes(descriptor).joinToString(";") { it.className }
         private var isInjectConstructor = false
         private var startVarIndex = 0
 
@@ -63,25 +64,18 @@ class InjectClassVisitor(
         }
 
         override fun onMethodExit(opcode: Int) {
-            if (!isInjectConstructor) {
+            if (!isInjectConstructor || opcode != RETURN) {
                 return
             }
 
             methodVisitor.visitVarInsn(LLOAD, startVarIndex)
             methodVisitor.visitLdcInsn(className)
-            methodVisitor.visitVarInsn(ALOAD, 0)
-            methodVisitor.visitMethodInsn(
-                INVOKEVIRTUAL,
-                "java/lang/Object",
-                "getClass",
-                "()Ljava/lang/Class;",
-                false
-            )
+            methodVisitor.visitLdcInsn(parameterClassNames)
             methodVisitor.visitMethodInsn(
                 INVOKESTATIC,
                 "com/yandex/demeter/profiler/inject/internal/asm/InjectAsm",
                 "log",
-                "(JLjava/lang/String;Ljava/lang/Class;)V",
+                "(JLjava/lang/String;Ljava/lang/String;)V",
                 false
             )
         }

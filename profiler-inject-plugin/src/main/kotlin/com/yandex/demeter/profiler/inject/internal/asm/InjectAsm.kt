@@ -15,12 +15,12 @@ abstract class AbstractInjectAsm(
     protected inline fun logInternal(
         startTimeNs: Long,
         className: String,
-        initializedClass: Class<*>,
+        parameterClassNames: String,
     ) {
         val finishTimeNs = System.nanoTime()
         queue.trySend(
             AsmInjectMetric(
-                initializedClass = initializedClass,
+                parameterClassNames = parameterClassNames,
                 className = className,
                 startTimeNs = startTimeNs,
                 finishTimeNs = finishTimeNs,
@@ -41,16 +41,22 @@ object InjectAsm : AbstractInjectAsm(
 ) {
     val metricsQueue: Flow<AsmInjectMetric> get() = queue.consumeAsFlow()
 
+    @Suppress("UNUSED_PARAMETER")
+    @JvmStatic
+    fun log(startTimeNs: Long, className: String, initializedClass: Class<*>) {
+        logInternal(startTimeNs, className, "")
+    }
+
     @JvmStatic
     fun log(
         startTimeNs: Long,
         className: String,
-        initializedClass: Class<*>,
+        parameterClassNames: String,
     ) {
         logInternal(
             startTimeNs = startTimeNs,
             className = className,
-            initializedClass = initializedClass,
+            parameterClassNames = parameterClassNames,
         )
     }
 }

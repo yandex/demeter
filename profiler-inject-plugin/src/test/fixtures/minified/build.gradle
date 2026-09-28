@@ -1,0 +1,39 @@
+plugins {
+    id 'com.android.application'
+    id 'org.jetbrains.kotlin.android'
+    id 'com.yandex.demeter.inject'
+}
+
+android {
+    namespace 'sample.demeter'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'sample.demeter.injectvalidation'
+        minSdk 23
+        targetSdk 33
+        versionCode 1
+        versionName '1.0'
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+kotlin { jvmToolchain(17) }
+demeterInject {
+    enabled = true
+    includedClasses = ['sample.demeter']
+}
+dependencies {
+    implementation project(':profiler-inject-plugin')
+    implementation libs.javaXInject
+    implementation libs.coroutinesAndroid
+}

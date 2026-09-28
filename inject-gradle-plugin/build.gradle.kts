@@ -2,6 +2,7 @@ import com.vanniktech.maven.publish.GradlePlugin
 import com.vanniktech.maven.publish.JavadocJar
 import extensions.configurePom
 import extensions.configureRepository
+import extensions.includeTests
 import extensions.plugin
 
 plugins {
@@ -29,6 +30,8 @@ mavenPublishing {
     publishing { configureRepository() }
     pom { configurePom("Demeter Inject Gradle Plugin") }
 }
+
+includeTests()
 
 dependencies {
     api(projects.gradlePluginUtils)
