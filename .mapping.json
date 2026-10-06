@@ -289,6 +289,7 @@
   "tracer-gradle-plugin/src/main/kotlin/com/yandex/demeter/tracer/plugin/asm/TracerClassVisitor.kt":"taxi/mobile/demeter/tracer-gradle-plugin/src/main/kotlin/com/yandex/demeter/tracer/plugin/asm/TracerClassVisitor.kt",
   "tracer-gradle-plugin/src/main/kotlin/com/yandex/demeter/tracer/plugin/asm/TracerClassVisitorFactory.kt":"taxi/mobile/demeter/tracer-gradle-plugin/src/main/kotlin/com/yandex/demeter/tracer/plugin/asm/TracerClassVisitorFactory.kt",
   "tracer-gradle-plugin/src/test/kotlin/com/yandex/demeter/plugin/DemeterTracerPluginTest.kt":"taxi/mobile/demeter/tracer-gradle-plugin/src/test/kotlin/com/yandex/demeter/plugin/DemeterTracerPluginTest.kt",
+  "tracer-gradle-plugin/src/test/kotlin/com/yandex/demeter/plugin/TracerFieldAccessorTest.kt":"taxi/mobile/demeter/tracer-gradle-plugin/src/test/kotlin/com/yandex/demeter/plugin/TracerFieldAccessorTest.kt",
   "tracer-gradle-plugin/src/test/kotlin/com/yandex/test/TestApply.kt":"taxi/mobile/demeter/tracer-gradle-plugin/src/test/kotlin/com/yandex/test/TestApply.kt",
   "tracer-gradle-plugin/src/test/kotlin/com/yandex/test/TestApplyWithParameters.kt":"taxi/mobile/demeter/tracer-gradle-plugin/src/test/kotlin/com/yandex/test/TestApplyWithParameters.kt",
   "tracer-gradle-plugin/src/test/kotlin/com/yandex/test/TestClass.kt":"taxi/mobile/demeter/tracer-gradle-plugin/src/test/kotlin/com/yandex/test/TestClass.kt",

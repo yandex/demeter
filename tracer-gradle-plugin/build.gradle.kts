@@ -39,6 +39,7 @@ dependencies {
     implementation(libs.tools.gradle)
     implementation(libs.tools.gradleApi)
     implementation(libs.asm.commons)
+    implementation(libs.asm.tree)
     implementation(libs.asm.utils)
 
     testImplementation(gradleTestKit())

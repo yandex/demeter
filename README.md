@@ -327,6 +327,8 @@ android {
 
 ### Tracer Plugin Parameters
 
+The tracer skips simple getters that only return a non-volatile instance field of `this`, or a non-volatile static field of their own class from a static method. Getters with computations, method calls or synchronization, volatile reads, constructors and class initializers remain eligible for tracing. Instance methods that read static fields are also retained because field access can trigger class initialization inside the method. This preserves the shrinker's ability to optimize plain field accessors.
+
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `enabled` | `Boolean` | `false` | Enable/disable tracer feature |

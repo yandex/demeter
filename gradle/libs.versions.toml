@@ -82,6 +82,7 @@ tools-sdkCommon = { group = "com.android.tools", name = "sdk-common", version.re
 commons-io = { group = "commons-io", name = "commons-io", version.ref = "commonsIo" }
 asm-utils = { group = "org.ow2.asm", name = "asm-util", version.ref = "asm" }
 asm-commons = { group = "org.ow2.asm", name = "asm-commons", version.ref = "asm" }
+asm-tree = { group = "org.ow2.asm", name = "asm-tree", version.ref = "asm" }
 
 junit-core = { group = "junit", name = "junit", version.ref = "junit" }
 junit-jupiter = { group = "org.junit.jupiter", name = "junit-jupiter", version.ref = "jupiter" }
